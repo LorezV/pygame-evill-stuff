@@ -9,7 +9,9 @@ def terminate():
     pygame.quit()
     sys.exit()
 
+
 pygame.init()
+pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode(SIZE)
 screen_minimap = pygame.Surface((WIDTH // MAP_SCALE, HEIGHT // MAP_SCALE))
 clock = pygame.time.Clock()
