@@ -21,6 +21,7 @@ while True:
         if event.type == pygame.QUIT:
             terminate()
     # player.draw(screen)
-    # drawer.ray_casting(player.pos(), player.angle())
+    drawer.ray_casting(player.pos, player.ang)
+    player.movement()
     pygame.display.flip()
     clock.tick(FPS)
