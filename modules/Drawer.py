@@ -1,11 +1,28 @@
 import pygame
 from modules.Settings import *
-from modules.World import world_map
+from modules.World import world_map, mini_map
 
 
 class Drawer:
-    def __init__(self, screen):
-        self.scr = screen
+    def __init__(self, screen, screen_minimap):
+        self.screen = screen
+        self.screen_minimap = screen_minimap
+        self.font = pygame.font.SysFont('arial', 36, bold=True)
+
+    def fps(self, clock):
+        display_fps = str(int(clock.get_fps()))
+        render = self.font.render(display_fps, 0, GREEN)
+        self.screen.blit(render, FPS_POS)
+
+    def mini_map(self, player):
+        self.screen_minimap.fill("black")
+        map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
+        pygame.draw.line(self.screen_minimap, "yellow", (map_x, map_y), (map_x + 12 * math.cos(player.angle),
+                                                                     map_y + 12 * math.sin(player.angle)), 2)
+        pygame.draw.circle(self.screen_minimap, "red", (int(map_x), int(map_y)), 5)
+        for x, y in mini_map:
+            pygame.draw.rect(self.screen_minimap, "green", (x, y, MAP_TILE, MAP_TILE))
+        self.screen.blit(self.screen_minimap, MAP_POS)
 
     def mapping(self, a, b):
         return (a // TILE) * TILE, (b // TILE) * TILE
@@ -43,7 +60,7 @@ class Drawer:
             proj_height = PROJ_COEFF / depth
             c = 255 / (1 + depth * depth * 0.00002)
             color = (c, c // 2, c // 3)
-            pygame.draw.rect(self.scr, color, (
+            pygame.draw.rect(self.screen, color, (
                 ray * SCALE, HALF_HEIGHT - proj_height // 2, SCALE,
                 proj_height))
             cur_angle += DELTA_ANGLE
