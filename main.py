@@ -20,7 +20,6 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
-    # player.draw(screen)
     drawer.ray_casting(player.pos, player.ang)
     player.movement()
     pygame.display.flip()

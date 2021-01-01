@@ -1,5 +1,5 @@
-import pygame, math
-from .Settings import *
+import pygame
+from modules.Settings import *
 
 
 class Player():
@@ -18,13 +18,6 @@ class Player():
     @property
     def ang(self):
         return self.angle
-
-    def draw(self, surface):
-        pygame.draw.circle(surface, (150, 150, 255), (self.x, self.y), 10)
-        pygame.draw.line(surface, YELLOW, self.pos,
-                         (self.x + 20 * math.cos(self.angle),
-                          self.y + 20 * math.sin(self.angle)), 2)
-        self.movement()
 
     def movement(self):
         sin_a = math.sin(self.angle)
