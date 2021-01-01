@@ -9,8 +9,6 @@ def terminate():
     sys.exit()
 
 
-FPS = 60
-SIZE = HEIGHT, WIDTH = 800, 600
 screen = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
 player = Player()
