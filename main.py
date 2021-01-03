@@ -33,5 +33,6 @@ while True:
     drawer.fps(clock)
     drawer.mini_map(player)
     player.movement()
+    drawer.interface(player)
     pygame.display.flip()
     clock.tick(FPS)

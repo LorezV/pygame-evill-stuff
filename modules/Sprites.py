@@ -6,13 +6,10 @@ class Sprites:
     def __init__(self):
         self.sprite_types = {
             'slender': [pygame.image.load(
-                f'data/sprites/slender/{i}.png').convert_alpha() for i in
-                        range(1, 9)]
+                f'data/sprites/slender/{i}.png').convert_alpha() for i in range(1, 9)]
         }
         self.objects_list = [
-            SpriteObject(self.sprite_types['slender'], False, (8.7, 4), 0,
-                         1)
-        ]
+            SpriteObject(self.sprite_types['slender'], False, (8.7, 4), 0, 1)]
 
 
 class SpriteObject:

@@ -21,9 +21,16 @@ class Drawer:
     def mini_map(self, player):
         self.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
+        map_x_col, map_y_col = player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE
         pygame.draw.line(self.screen_minimap, "yellow", (map_x, map_y),
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
+
+        # Draw collision rect
+        # pygame.draw.rect(self.screen_minimap, "green", (
+        # player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE, player.rect.width // MAP_SCALE,
+        # player.rect.height // MAP_SCALE))
+
         pygame.draw.circle(self.screen_minimap, "red",
                            (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
@@ -90,6 +97,16 @@ class Drawer:
         self.screen.blit(self.textures['t'], (top_offset + WIDTH, 0))
         pygame.draw.rect(self.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+
+    def interface(self, player):
+        delta_x, delta_y = WIDTH // 5, HEIGHT // 30
+        margin = 10
+        padding = 5
+        pygame.draw.rect(self.screen, GREEN, (margin, margin, margin + delta_x, margin + delta_y))
+        pygame.draw.rect(self.screen, RED, (margin + padding, margin + padding, delta_x, delta_y))
+        health_text = self.font.render(str(player.health) + "%", 1, WHITE)
+        self.screen.blit(health_text, ((delta_x // 2) - (self.font.get_height() // 2) + margin - padding,
+                                       (delta_y // 2) - (self.font.get_height() // 2) + margin + padding))
 
     def world(self, world_objects):
         for obj in sorted(world_objects, key=lambda x: x[0], reverse=True):
