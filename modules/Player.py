@@ -33,7 +33,6 @@ class Player:
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_objects)
-        print(hit_indexes)
 
         if len(hit_indexes):
             delta_x, delta_y = 0, 0
@@ -99,7 +98,7 @@ class Player:
             self.angle += 0.02
 
         if keys[pygame.K_SPACE]:
-            self.set_health(1000)
+            self.set_health(25)
 
     def mouse_control(self):
         if pygame.mouse.get_focused():

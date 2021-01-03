@@ -103,7 +103,7 @@ class Drawer:
         margin = 10
         padding = 5
         pygame.draw.rect(self.screen, GREEN, (margin, margin, margin + delta_x, margin + delta_y))
-        pygame.draw.rect(self.screen, RED, (margin + padding, margin + padding, delta_x, delta_y))
+        pygame.draw.rect(self.screen, RED, (margin + padding, margin + padding, delta_x * player.health // 100, delta_y))
         health_text = self.font.render(str(player.health) + "%", 1, WHITE)
         self.screen.blit(health_text, ((delta_x // 2) - (self.font.get_height() // 2) + margin - padding,
                                        (delta_y // 2) - (self.font.get_height() // 2) + margin + padding))
