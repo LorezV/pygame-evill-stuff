@@ -8,7 +8,10 @@ class Drawer:
         self.screen = screen
         self.screen_minimap = screen_minimap
         self.font = pygame.font.SysFont('arial', 36, bold=True)
-        self.texture = pygame.image.load('data/textures/hospital.png').convert()
+        self.textures = {
+            '2': pygame.image.load('data/textures/hospital.png').convert(),
+            '1': pygame.image.load('data/textures/floor.png').convert(),
+            't': pygame.image.load('data/textures/wood.png').convert()}
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
@@ -31,7 +34,8 @@ class Drawer:
     def mapping(self, a, b):
         return (a // TILE) * TILE, (b // TILE) * TILE
 
-    def ray_casting(self, player_pos, player_angle):
+    def ray_casting(self, player, player_pos, player_angle):
+        walls = []
         ox, oy = player_pos
         xm, ym = self.mapping(ox, oy)
         cur_angle = player_angle - HALF_FOV
@@ -45,7 +49,9 @@ class Drawer:
             for i in range(0, WIDTH, TILE):
                 depth_v = (x - ox) / cos_a
                 yv = oy + depth_v * sin_a
-                if self.mapping(x + dx, yv) in world_map:
+                tile_v = self.mapping(x + dx, yv)
+                if tile_v in world_map:
+                    texture_v = world_map[tile_v]
                     break
                 x += dx * TILE
 
@@ -53,21 +59,40 @@ class Drawer:
             for i in range(0, HEIGHT, TILE):
                 depth_h = (y - oy) / sin_a
                 xh = ox + depth_h * cos_a
-                if self.mapping(xh, y + dy) in world_map:
+                tile_h = self.mapping(xh, y + dy)
+                if tile_h in world_map:
+                    texture_h = world_map[tile_h]
                     break
                 y += dy * TILE
 
-            depth, offset = (depth_v, yv) if depth_v < depth_h else (
-                depth_h, xh)
+            depth, offset, texture = (
+                depth_v, yv, texture_v) if depth_v < depth_h else (
+                depth_h, xh, texture_h)
             offset = int(offset) % TILE
-            depth *= math.cos(player_angle - cur_angle)
+            depth *= math.cos(player.ang - cur_angle)
             depth = max(depth, 0.0000001)
             proj_height = min(int(PROJ_COEFF / depth), 2 * HEIGHT)
-            wall_column = self.texture.subsurface(offset * TEXTURE_SCALE, 0,
-                                                  TEXTURE_SCALE,
-                                                  TEXTURE_HEIGHT)
+            wall_column = self.textures[texture].subsurface(
+                offset * TEXTURE_SCALE, 0,
+                TEXTURE_SCALE,
+                TEXTURE_HEIGHT)
             wall_column = pygame.transform.scale(wall_column,
                                                  (SCALE, proj_height))
-            self.screen.blit(wall_column,
-                          (ray * SCALE, HALF_HEIGHT - proj_height // 2))
+            walls_pos = (ray * SCALE, HALF_HEIGHT - proj_height // 2)
+            walls.append((depth, wall_column, walls_pos))
             cur_angle += DELTA_ANGLE
+        return walls
+
+    def background(self, angle):
+        top_offset = -5 * math.degrees(angle) % WIDTH
+        self.screen.blit(self.textures['t'], (top_offset, 0))
+        self.screen.blit(self.textures['t'], (top_offset - WIDTH, 0))
+        self.screen.blit(self.textures['t'], (top_offset + WIDTH, 0))
+        pygame.draw.rect(self.screen, BLACK,
+                         (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+
+    def world(self, world_objects):
+        for obj in sorted(world_objects, key=lambda x: x[0], reverse=True):
+            if obj[0]:
+                _, objec, objec_pos = obj
+                self.screen.blit(objec, objec_pos)

@@ -1,21 +1,23 @@
 from modules.Settings import *
 
 text_map = [
-    '############',
-    '#..#...#...#',
-    '#..#.....#.#',
-    '#.######.###',
-    '#..........#',
-    '####.#######',
-    '#..........#',
-    '############'
+    '111111111111',
+    '1..2...2...1',
+    '1..2.....2.1',
+    '1.222222.221',
+    '1..........1',
+    '1222.2222221',
+    '1..........1',
+    '111111111111',
 ]
 
-world_map = set()
+world_map = {}
 mini_map = set()
-
 for j, row in enumerate(text_map):
     for i, char in enumerate(row):
-        if char == '#':
-            world_map.add((i * TILE, j * TILE))
+        if char != '.':
             mini_map.add((i * MAP_TILE, j * MAP_TILE))
+            if char == '1':
+                world_map[(i * TILE, j * TILE)] = '1'
+            elif char == '2':
+                world_map[(i * TILE, j * TILE)] = '2'
