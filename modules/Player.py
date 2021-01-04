@@ -14,6 +14,8 @@ class Player:
         self.angle = PLAYER_ANGLE
 
         self.health = 100
+        self.stamina = 100
+        self.delta_stamina = 100
 
         # collision
         self.side = 50
@@ -35,6 +37,7 @@ class Player:
         hit_indexes = next_rect.collidelistall(collision_objects)
 
         if len(hit_indexes):
+            self.on_player_collision_entered()
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
                 hit_rect = self.collision_list[hit_index]
@@ -56,13 +59,23 @@ class Player:
         self.x += dx
         self.y += dy
 
-    def set_health(self, health):
-        if health > 100:
-            health = 100
-        elif health < 0:
-            health = 0
+    def on_player_collision_entered(self):
+        pass
 
-        self.health = health
+    def check_value(self, value):
+        value = int(value)
+        if value > 100:
+            value = 100
+        elif value < 0:
+            value = 0
+
+        return value
+
+    def set_health(self, health):
+        self.health = self.check_value(health)
+
+    def set_stamina(self, stamina):
+        self.stamina = self.check_value(stamina)
 
     def movement(self):
         self.keys_control()
@@ -99,6 +112,13 @@ class Player:
 
         if keys[pygame.K_SPACE]:
             self.set_health(25)
+
+        if keys[pygame.K_LSHIFT]:
+            self.player_speed = PLAYER_SPEED + 1
+            self.set_stamina(self.stamina - 2)
+        else:
+            self.player_speed = PLAYER_SPEED
+            self.set_stamina(self.stamina + 1)
 
     def mouse_control(self):
         if pygame.mouse.get_focused():

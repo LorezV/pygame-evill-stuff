@@ -7,7 +7,7 @@ class Drawer:
     def __init__(self, screen, screen_minimap):
         self.screen = screen
         self.screen_minimap = screen_minimap
-        self.font = pygame.font.SysFont('arial', 36, bold=True)
+        self.font = pygame.font.SysFont('arial', 26, bold=True)
         self.textures = {
             '2': pygame.image.load('data/textures/hospital.png').convert(),
             '1': pygame.image.load('data/textures/floor.png').convert(),
@@ -22,7 +22,7 @@ class Drawer:
         self.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
         map_x_col, map_y_col = player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE
-        pygame.draw.line(self.screen_minimap, "yellow", (map_x, map_y),
+        pygame.draw.line(self.screen_minimap, YELLOW, (map_x, map_y),
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
 
@@ -31,10 +31,10 @@ class Drawer:
         # player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE, player.rect.width // MAP_SCALE,
         # player.rect.height // MAP_SCALE))
 
-        pygame.draw.circle(self.screen_minimap, "red",
+        pygame.draw.circle(self.screen_minimap, RED,
                            (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
-            pygame.draw.rect(self.screen_minimap, "green",
+            pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
         self.screen.blit(self.screen_minimap, MAP_POS)
 
@@ -97,16 +97,26 @@ class Drawer:
         self.screen.blit(self.textures['t'], (top_offset + WIDTH, 0))
         pygame.draw.rect(self.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+        pass
 
     def interface(self, player):
-        delta_x, delta_y = WIDTH // 5, HEIGHT // 30
-        margin = 10
-        padding = 5
-        pygame.draw.rect(self.screen, GREEN, (margin, margin, margin + delta_x, margin + delta_y))
-        pygame.draw.rect(self.screen, RED, (margin + padding, margin + padding, delta_x * player.health // 100, delta_y))
+        # Player health
+        pygame.draw.rect(self.screen, BLACK, (MARGIN, MARGIN, HEALTH_WIDTH, HEALTH_HEIGHT))
+        pygame.draw.rect(self.screen, RED, (
+            MARGIN + PADDING, MARGIN + PADDING, HEALTH_WIDTH * player.health // 100 - PADDING * 2,
+            HEALTH_HEIGHT - PADDING * 2))
         health_text = self.font.render(str(player.health) + "%", 1, WHITE)
-        self.screen.blit(health_text, ((delta_x // 2) - (self.font.get_height() // 2) + margin - padding,
-                                       (delta_y // 2) - (self.font.get_height() // 2) + margin + padding))
+        self.screen.blit(health_text, (HEALTH_TEXT_POS_X - health_text.get_width() // 2,
+                                       HEALTH_TEXT_POS_Y - health_text.get_height() // 2))
+
+        # Player stamina
+        pygame.draw.rect(self.screen, BLACK, (STAMINA_POS_X, STAMINA_POS_Y, STAMINA_WIDTH, STAMINA_HEIGHT))
+        pygame.draw.rect(self.screen, BLUE, (
+            STAMINA_POS_X + PADDING, STAMINA_POS_Y + PADDING, STAMINA_WIDTH * player.stamina // 100 - PADDING * 2,
+            STAMINA_HEIGHT - PADDING * 2))
+        stamina_text = self.font.render(str(player.stamina) + "%", 1, WHITE)
+        self.screen.blit(stamina_text, (STAMINA_TEXT_POS_X - stamina_text.get_width() // 2,
+                                       STAMINA_TEXT_POS_Y - stamina_text.get_height() // 2))
 
     def world(self, world_objects):
         for obj in sorted(world_objects, key=lambda x: x[0], reverse=True):
