@@ -1,17 +1,8 @@
 from modules.Settings import *
 import pygame
-
-#
-# text_map = [
-#     '111111111111',
-#     '1..2...2...1',
-#     '1..2.....2.1',
-#     '1.222222.221',
-#     '1..........1',
-#     '1222.2222221',
-#     '1..........1',
-#     '111111111111',
-# ]
+from  numba.core import types
+from numba.typed import Dict
+from numba import int32
 
 matrix_map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -34,7 +25,7 @@ matrix_map = [
 
 WORLD_WIDTH = len(matrix_map[0]) * TILE
 WORLD_HEIGHT = len(matrix_map) * TILE
-world_map = {}
+world_map = Dict.empty(key_type=types.UniTuple(int32, 2), value_type=int32)
 mini_map = set()
 collision_objects = []
 for j, row in enumerate(matrix_map):
