@@ -1,9 +1,21 @@
 import pygame
 from modules.Settings import *
+from collections import deque
 
 
 class Sprites:
     def __init__(self):
+        self.sprite_parametrs = {
+            'sprite_slender': {
+                'sprite': [pygame.image.load(
+                    f'data/sprites/slender/{i}.png').convert_alpha() for i in
+                           range(1, 9)],
+                'viewing_angles': True,
+                'shift': 0,
+                'scale': 1,
+                'animation': deque
+            }
+        }
         self.sprite_types = {
             'slender': [pygame.image.load(
                 f'data/sprites/slender/{i}.png').convert_alpha() for i in
@@ -26,11 +38,7 @@ class SpriteObject:
             self.sprite_positions = {angle: pos for angle, pos in
                                      zip(self.sprite_angles, self.object)}
 
-    def object_locate(self, player, walls):
-        fake_walls0 = [walls[0] for i in range(FAKE_RAYS)]
-        fake_walls1 = [walls[-1] for i in range(FAKE_RAYS)]
-        fake_walls = fake_walls0 + walls + fake_walls1
-
+    def object_locate(self, player):
         dx, dy = self.x - player.x, self.y - player.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
@@ -45,9 +53,10 @@ class SpriteObject:
         distance *= math.cos(HALF_FOV - current_ray * DELTA_ANGLE)
 
         fake_ray = current_ray + FAKE_RAYS
-        if 0 <= fake_ray <= NUM_RAYS - 1 + 2 * FAKE_RAYS and \
-                distance < fake_walls[fake_ray][0]:
-            proj_height = int(PROJ_COEFF / distance * self.scale)
+        if 0 <= fake_ray <= FAKE_RAYS_RANGE and \
+                distance > 30:
+            proj_height = min(int(PROJ_COEFF / distance * self.scale),
+                              DOUBLE_HEIGHT)
             half_proj_height = proj_height // 2
             shift = half_proj_height * self.shift
 

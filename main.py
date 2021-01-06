@@ -28,7 +28,7 @@ while True:
             terminate()
     drawer.background(player.ang)
     walls = drawer.ray_casting(player, player.pos, player.ang)
-    drawer.world(walls + [obj.object_locate(player, walls) for obj in
+    drawer.world(walls + [obj.object_locate(player) for obj in
                           sprites.objects_list])
     drawer.fps(clock)
     drawer.mini_map(player)

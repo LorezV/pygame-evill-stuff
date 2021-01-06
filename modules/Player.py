@@ -31,7 +31,8 @@ class Player:
         return self.angle
 
     def detect_collision(self, dx, dy):
-        self.rect = pygame.Rect(self.x - self.side // 2, self.y - self.side // 2, self.side, self.side)
+        self.rect = pygame.Rect(self.x - self.side // 2,
+                                self.y - self.side // 2, self.side, self.side)
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_objects)
@@ -78,8 +79,8 @@ class Player:
         self.stamina = self.check_value(stamina)
 
     def movement(self):
-        self.keys_control()
         self.mouse_control()
+        self.keys_control()
         self.angle %= DOUBLE_PI
 
     def keys_control(self):
