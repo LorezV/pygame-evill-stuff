@@ -22,9 +22,10 @@ class Player:
         # collision
         self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
-        self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for obj in self.sprites.objects_list if
-                                  obj.blocked]
-        self.collision_list = collision_objects + self.collision_sprites
+        # self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for
+        #                           obj in self.sprites.objects_list if
+        #                           obj.blocked]
+        # self.collision_list = collision_objects + self.collision_sprites
 
     @property
     def pos(self):
@@ -35,17 +36,17 @@ class Player:
         return self.angle
 
     def detect_collision(self, dx, dy):
-        self.rect = pygame.Rect(self.x - self.side // 2,
-                                self.y - self.side // 2, self.side, self.side)
+        collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for obj in self.sprites.objects_list if obj.blocked]
+        collision_list = collision_objects + collision_sprites
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
-        hit_indexes = next_rect.collidelistall(self.collision_list)
+        hit_indexes = next_rect.collidelistall(collision_list)
 
         if len(hit_indexes):
             self.on_player_collision_entered()
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
-                hit_rect = self.collision_list[hit_index]
+                hit_rect = collision_list[hit_index]
                 if dx > 0:
                     delta_x += next_rect.right - hit_rect.left
                 else:
@@ -89,6 +90,7 @@ class Player:
     def movement(self):
         self.mouse_control()
         self.keys_control()
+        self.rect.center = self.x, self.y
         self.angle %= DOUBLE_PI
 
     def keys_control(self):

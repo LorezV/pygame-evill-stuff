@@ -1,6 +1,6 @@
 from modules.Settings import *
 import pygame
-from  numba.core import types
+from numba.core import types
 from numba.typed import Dict
 from numba import int32
 
