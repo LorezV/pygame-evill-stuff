@@ -4,10 +4,12 @@ from modules.World import collision_objects
 
 
 class Player:
-    def __init__(self):
+    def __init__(self, sprites):
         super().__init__()
         self.x, self.y = 200, 200
         self.sensitivity = SENSITIVITY
+
+        self.sprites = sprites
 
         # Перенести в settings
         self.player_speed = PLAYER_SPEED
@@ -20,7 +22,9 @@ class Player:
         # collision
         self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
-        self.collision_list = collision_objects
+        self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for obj in self.sprites.objects_list if
+                                  obj.blocked]
+        self.collision_list = collision_objects + self.collision_sprites
 
     @property
     def pos(self):
@@ -35,7 +39,7 @@ class Player:
                                 self.y - self.side // 2, self.side, self.side)
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
-        hit_indexes = next_rect.collidelistall(collision_objects)
+        hit_indexes = next_rect.collidelistall(self.collision_list)
 
         if len(hit_indexes):
             self.on_player_collision_entered()
@@ -77,8 +81,10 @@ class Player:
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)
-        if self.stamina == 0: self.can_run = False
-        elif self.stamina > 50: self.can_run = True
+        if self.stamina == 0:
+            self.can_run = False
+        elif self.stamina > 50:
+            self.can_run = True
 
     def movement(self):
         self.mouse_control()

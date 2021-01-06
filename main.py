@@ -18,7 +18,7 @@ screen_minimap = pygame.Surface(MINIMAP_RES)
 
 sprites = Sprites()
 clock = pygame.time.Clock()
-player = Player()
+player = Player(sprites)
 drawer = Drawer(screen, screen_minimap)
 
 while True:

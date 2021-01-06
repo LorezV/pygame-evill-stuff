@@ -17,7 +17,8 @@ class Sprites:
                     f'data/sprites/slender_animation/attack{i}.png').convert_alpha()
                                    for i in range(11)),
                 'animation_dist': 200,
-                'animation_speed': 1,
+                'animation_speed': 8,
+                'blocked': True,
             },
         }
         self.objects_list = [
@@ -34,7 +35,10 @@ class SpriteObject:
         self.animation_dist = parameters['animation_dist']
         self.animation_speed = parameters['animation_speed']
         self.animation_count = 0
-        self.pos = self.x, self.y = pos[0] * TILE, pos[1] * TILE
+        self.blocked = parameters['blocked']
+        self.side = 30
+        self.x, self.y = pos[0] * TILE, pos[1] * TILE
+        self.pos = self.x - self.side // 2, self.y - self.side // 2
 
         if self.viewing_angles:
             self.sprite_angles = [frozenset(range(i, i + 45)) for i in
