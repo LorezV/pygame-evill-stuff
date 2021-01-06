@@ -15,7 +15,7 @@ class Player:
 
         self.health = 100
         self.stamina = 100
-        self.delta_stamina = 100
+        self.can_run = True
 
         # collision
         self.side = 40
@@ -77,6 +77,8 @@ class Player:
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)
+        if self.stamina == 0: self.can_run = False
+        elif self.stamina > 50: self.can_run = True
 
     def movement(self):
         self.mouse_control()
@@ -114,7 +116,7 @@ class Player:
         if keys[pygame.K_SPACE]:
             self.set_health(25)
 
-        if keys[pygame.K_LSHIFT]:
+        if keys[pygame.K_LSHIFT] and self.can_run:
             self.player_speed = PLAYER_SPEED + 1
             self.set_stamina(self.stamina - 2)
         else:
