@@ -13,26 +13,30 @@ class Sprites:
                 'viewing_angles': True,
                 'shift': 0,
                 'scale': 1,
-                'animation': deque
-            }
-        }
-        self.sprite_types = {
-            'slender': [pygame.image.load(
-                f'data/sprites/slender/{i}.png').convert_alpha() for i in
-                        range(1, 9)]
+                'animation': deque(pygame.image.load(
+                    f'data/sprites/slender_animation/attack{i}.png').convert_alpha()
+                                   for i in range(11)),
+                'animation_dist': 200,
+                'animation_speed': 1,
+            },
         }
         self.objects_list = [
-            SpriteObject(self.sprite_types['slender'], False, (8.7, 4), 0, 1)]
+            SpriteObject(self.sprite_parametrs['sprite_slender'], (8.7, 4))]
 
 
 class SpriteObject:
-    def __init__(self, object, static, pos, shift, scale):
-        self.object = object
-        self.static = static
+    def __init__(self, parameters, pos):
+        self.object = parameters['sprite']
+        self.viewing_angles = parameters['viewing_angles']
+        self.shift = parameters['shift']
+        self.scale = parameters['scale']
+        self.animation = parameters['animation']
+        self.animation_dist = parameters['animation_dist']
+        self.animation_speed = parameters['animation_speed']
+        self.animation_count = 0
         self.pos = self.x, self.y = pos[0] * TILE, pos[1] * TILE
-        self.shift = shift
-        self.scale = scale
-        if not static:
+
+        if self.viewing_angles:
             self.sprite_angles = [frozenset(range(i, i + 45)) for i in
                                   range(0, 360, 45)]
             self.sprite_positions = {angle: pos for angle, pos in
@@ -60,7 +64,7 @@ class SpriteObject:
             half_proj_height = proj_height // 2
             shift = half_proj_height * self.shift
 
-            if not self.static:
+            if self.viewing_angles:
                 if theta < 0:
                     theta += DOUBLE_PI
                 theta = 360 - int(math.degrees(theta))
@@ -70,10 +74,19 @@ class SpriteObject:
                         self.object = self.sprite_positions[angles]
                         break
 
+            sprite_object = self.object
+            if self.animation and distance < self.animation_dist:
+                sprite_object = self.animation[0]
+                if self.animation_count < self.animation_speed:
+                    self.animation_count += 1
+                else:
+                    self.animation.rotate()
+                    self.animation_count = 0
+
             sprite_pos = (current_ray * SCALE - half_proj_height,
                           HALF_HEIGHT - half_proj_height + shift)
-            sprite = pygame.transform.scale(self.object,
-                                            (proj_height, proj_height))
+            sprite = pygame.transform.scale(
+                sprite_object, (proj_height, proj_height))
             return distance, sprite, sprite_pos
         else:
             return False,
