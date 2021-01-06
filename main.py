@@ -14,7 +14,7 @@ def terminate():
 pygame.init()
 pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode(SIZE)
-screen_minimap = pygame.Surface((WIDTH // MAP_SCALE, HEIGHT // MAP_SCALE))
+screen_minimap = pygame.Surface(MINIMAP_RES)
 
 sprites = Sprites()
 clock = pygame.time.Clock()

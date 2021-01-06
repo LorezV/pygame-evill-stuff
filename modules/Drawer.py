@@ -1,6 +1,6 @@
 import pygame
 from modules.Settings import *
-from modules.World import world_map, mini_map
+from modules.World import world_map, mini_map, WORLD_WIDTH, WORLD_HEIGHT
 
 
 class Drawer:
@@ -9,8 +9,8 @@ class Drawer:
         self.screen_minimap = screen_minimap
         self.font = pygame.font.SysFont('arial', 26, bold=True)
         self.textures = {
-            '2': pygame.image.load('data/textures/hospital.png').convert(),
-            '1': pygame.image.load('data/textures/floor.png').convert(),
+            2: pygame.image.load('data/textures/hospital.png').convert(),
+            1: pygame.image.load('data/textures/floor.png').convert(),
             't': pygame.image.load('data/textures/wood.png').convert()}
 
     def fps(self, clock):
@@ -44,6 +44,7 @@ class Drawer:
     def ray_casting(self, player, player_pos, player_angle):
         walls = []
         ox, oy = player_pos
+        texture_v, texture_h = 1, 1
         xm, ym = self.mapping(ox, oy)
         cur_angle = player_angle - HALF_FOV
         for ray in range(NUM_RAYS):
@@ -53,7 +54,7 @@ class Drawer:
             cos_a = cos_a if cos_a else 0.000001
 
             x, dx = (xm + TILE, 1) if cos_a >= 0 else (xm, -1)
-            for i in range(0, WIDTH, TILE):
+            for i in range(0, WORLD_WIDTH, TILE):
                 depth_v = (x - ox) / cos_a
                 yv = oy + depth_v * sin_a
                 tile_v = self.mapping(x + dx, yv)
@@ -63,7 +64,7 @@ class Drawer:
                 x += dx * TILE
 
             y, dy = (ym + TILE, 1) if sin_a >= 0 else (ym, -1)
-            for i in range(0, HEIGHT, TILE):
+            for i in range(0, WORLD_HEIGHT, TILE):
                 depth_h = (y - oy) / sin_a
                 xh = ox + depth_h * cos_a
                 tile_h = self.mapping(xh, y + dy)
@@ -78,7 +79,7 @@ class Drawer:
             offset = int(offset) % TILE
             depth *= math.cos(player.ang - cur_angle)
             depth = max(depth, 0.0000001)
-            proj_height = min(int(PROJ_COEFF / depth), 2 * HEIGHT)
+            proj_height = min(int(PROJ_COEFF / depth), PENTA_HEIGHT)
             wall_column = self.textures[texture].subsurface(
                 offset * TEXTURE_SCALE, 0,
                 TEXTURE_SCALE,
@@ -95,6 +96,7 @@ class Drawer:
         self.screen.blit(self.textures['t'], (top_offset, 0))
         self.screen.blit(self.textures['t'], (top_offset - WIDTH, 0))
         self.screen.blit(self.textures['t'], (top_offset + WIDTH, 0))
+
         pygame.draw.rect(self.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
         pass

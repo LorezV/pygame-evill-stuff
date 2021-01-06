@@ -6,7 +6,8 @@ class Sprites:
     def __init__(self):
         self.sprite_types = {
             'slender': [pygame.image.load(
-                f'data/sprites/slender/{i}.png').convert_alpha() for i in range(1, 9)]
+                f'data/sprites/slender/{i}.png').convert_alpha() for i in
+                        range(1, 9)]
         }
         self.objects_list = [
             SpriteObject(self.sprite_types['slender'], False, (8.7, 4), 0, 1)]
@@ -26,6 +27,10 @@ class SpriteObject:
                                      zip(self.sprite_angles, self.object)}
 
     def object_locate(self, player, walls):
+        fake_walls0 = [walls[0] for i in range(FAKE_RAYS)]
+        fake_walls1 = [walls[-1] for i in range(FAKE_RAYS)]
+        fake_walls = fake_walls0 + walls + fake_walls1
+
         dx, dy = self.x - player.x, self.y - player.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
 
@@ -39,8 +44,9 @@ class SpriteObject:
         current_ray = CENTER_RAY + delta_rays
         distance *= math.cos(HALF_FOV - current_ray * DELTA_ANGLE)
 
-        if 0 <= current_ray <= NUM_RAYS - 1 and \
-                distance < walls[current_ray][0]:
+        fake_ray = current_ray + FAKE_RAYS
+        if 0 <= fake_ray <= NUM_RAYS - 1 + 2 * FAKE_RAYS and \
+                distance < fake_walls[fake_ray][0]:
             proj_height = int(PROJ_COEFF / distance * self.scale)
             half_proj_height = proj_height // 2
             shift = half_proj_height * self.shift
@@ -59,6 +65,6 @@ class SpriteObject:
                           HALF_HEIGHT - half_proj_height + shift)
             sprite = pygame.transform.scale(self.object,
                                             (proj_height, proj_height))
-            return (distance, sprite, sprite_pos)
+            return distance, sprite, sprite_pos
         else:
             return False,

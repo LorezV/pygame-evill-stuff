@@ -18,7 +18,7 @@ class Player:
         self.delta_stamina = 100
 
         # collision
-        self.side = 50
+        self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
         self.collision_list = collision_objects
 
