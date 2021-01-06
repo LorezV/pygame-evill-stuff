@@ -10,9 +10,9 @@ class Drawer:
         self.screen_minimap = screen_minimap
         self.font = pygame.font.SysFont('arial', 26, bold=True)
         self.textures = {
-            2: pygame.image.load('data/textures/hospital.png').convert(),
-            1: pygame.image.load('data/textures/floor.png').convert(),
-            't': pygame.image.load('data/textures/wood.png').convert()}
+            2: pygame.image.load('data/textures/wall.png').convert(),
+            1: pygame.image.load('data/textures/fence.png').convert_alpha(),
+            't': pygame.image.load('data/textures/sky.png').convert()}
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
@@ -125,7 +125,7 @@ def ray_casting(player_pos, player_angle, world_map):
         offset = int(offset) % TILE
         depth *= math.cos(player_angle - cur_angle)
         depth = max(depth, 0.0000001)
-        proj_height = min(int(PROJ_COEFF / depth), PENTA_HEIGHT)
+        proj_height = int(PROJ_COEFF / depth)
 
         casted_walls.append((depth, offset, proj_height, texture))
         cur_angle += DELTA_ANGLE
@@ -137,12 +137,22 @@ def ray_casting_walls(player, textures):
     walls = []
     for ray, casted_values in enumerate(casted_walls):
         depth, offset, proj_height, texture = casted_values
-        wall_column = textures[texture].subsurface(
-            offset * TEXTURE_SCALE, 0,
-            TEXTURE_SCALE,
-            TEXTURE_HEIGHT)
-        wall_column = pygame.transform.scale(wall_column,
-                                             (SCALE, proj_height))
-        walls_pos = (ray * SCALE, HALF_HEIGHT - proj_height // 2)
+        if proj_height > HEIGHT:
+            coeff = proj_height / HEIGHT
+            texture_height = TEXTURE_HEIGHT / coeff
+            wall_column = textures[texture].subsurface(offset * TEXTURE_SCALE,
+                                                       HALF_TEXTURE_HEIGHT - texture_height // 2,
+                                                       TEXTURE_SCALE, texture_height)
+            wall_column = pygame.transform.scale(wall_column,
+                                                 (SCALE, HEIGHT))
+            walls_pos = (ray * SCALE, 0)
+        else:
+            wall_column = textures[texture].subsurface(
+                offset * TEXTURE_SCALE, 0,
+                TEXTURE_SCALE,
+                TEXTURE_HEIGHT)
+            wall_column = pygame.transform.scale(wall_column,
+                                                 (SCALE, proj_height))
+            walls_pos = (ray * SCALE, HALF_HEIGHT - proj_height // 2)
         walls.append((depth, wall_column, walls_pos))
     return walls

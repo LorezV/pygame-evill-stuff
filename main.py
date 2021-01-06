@@ -1,7 +1,5 @@
-import pygame
 import sys
 from modules.Player import Player
-from modules.Settings import *
 from modules.Sprites import *
 from modules.Drawer import Drawer, ray_casting_walls
 
