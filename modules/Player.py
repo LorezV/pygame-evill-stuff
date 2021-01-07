@@ -6,7 +6,7 @@ from modules.World import collision_objects
 class Player:
     def __init__(self, sprites):
         super().__init__()
-        self.x, self.y = 200, 200
+        self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
 
         self.sprites = sprites

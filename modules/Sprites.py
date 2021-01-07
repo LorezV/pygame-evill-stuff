@@ -20,17 +20,17 @@ class Sprites:
                 'death_animation': [],
                 'is_dead': None,
                 'dead_shift': None,
-                'animation_dist': 200,
+                'animation_dist': 50,
                 'animation_speed': 8,
                 'blocked': True,
                 'flag': 'npc',
                 'obj_action': deque([pygame.image.load(
-                    f'data/sprites/slender_move/move{i}.png').convert_alpha()
-                                     for i in range(1, 3)])
+                    f'data/sprites/slender_move/move1_{i}.png').convert_alpha()
+                                     for i in range(1, 6)])
             },
         }
         self.objects_list = [
-            SpriteObject(self.sprite_parametrs['sprite_slender'], (8.7, 4))]
+            SpriteObject(self.sprite_parametrs['sprite_slender'], (7, 3))]
 
 
 class SpriteObject:
