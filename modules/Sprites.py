@@ -20,7 +20,7 @@ class Sprites:
                 'death_animation': [],
                 'is_dead': None,
                 'dead_shift': None,
-                'animation_dist': 50,
+                'animation_dist': 200,
                 'animation_speed': 8,
                 'blocked': True,
                 'flag': 'npc',
