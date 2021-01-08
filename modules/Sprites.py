@@ -1,6 +1,8 @@
 import pygame
 from modules.Settings import *
 from collections import deque
+from modules.Drawer import ray_casting_npc_player
+from modules.World import world_map
 
 
 class Sprites:
@@ -8,14 +10,14 @@ class Sprites:
         self.sprite_parametrs = {
             'sprite_slender': {
                 'sprite': [pygame.image.load(
-                    f'data/sprites/slender/{i}.png').convert_alpha() for i in
+                    f'data/sprites/slender/idle/{i}.png').convert_alpha() for i in
                            range(1, 9)],
                 'viewing_angles': True,
                 'shift': 0,
                 'scale': (1, 1),
                 'side': 30,
                 'animation': deque(pygame.image.load(
-                    f'data/sprites/slender_animation/attack{i}.png').convert_alpha()
+                    f'data/sprites/slender/animation_attack/{i}.png').convert_alpha()
                                    for i in range(11)),
                 'death_animation': [],
                 'is_dead': None,
@@ -25,12 +27,12 @@ class Sprites:
                 'blocked': True,
                 'flag': 'npc',
                 'obj_action': deque([pygame.image.load(
-                    f'data/sprites/slender_move/move1_{i}.png').convert_alpha()
-                                     for i in range(1, 6)])
+                    f'data/sprites/slender/animation_move/{i}.png').convert_alpha()
+                                     for i in range(1, 7)])
             },
         }
         self.objects_list = [
-            SpriteObject(self.sprite_parametrs['sprite_slender'], (7, 3))]
+            Slender(self.sprite_parametrs['sprite_slender'], (8.7, 4))]
 
 
 class SpriteObject:
@@ -157,3 +159,28 @@ class SpriteObject:
             self.obj_action.rotate()
             self.animation_count = 0
         return sprite_object
+
+
+class Slender(SpriteObject):
+    def __init__(self, parameters, pos):
+        super().__init__(parameters, pos)
+
+    def move(self, player):
+        if self.distance > self.animation_dist:
+            dx = self.sx - player.pos[0]
+            dy = self.sy - player.pos[1]
+            self.x = self.sx + 1 if dx < 0 else self.x - 1
+            self.y = self.sy + 1 if dy < 0 else self.y - 1
+            self.pos = (self.x, self.y)
+
+    def action(self, player):
+        if self.flag == 'npc' and not self.is_dead:
+            if ray_casting_npc_player(self.sx, self.sy, world_map,
+                                      player.pos):
+                self.npc_action_trigger = True
+                self.move(player)
+            else:
+                self.npc_action_trigger = False
+
+    def update(self, player):
+        self.action(player)

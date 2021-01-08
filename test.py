@@ -1,16 +1,6 @@
-text_map = [
-    '############',
-    '#..#...#...#',
-    '#..#.....#.#',
-    '#.######.###',
-    '#..........#',
-    '####.#######',
-    '#..........#',
-    '############'
-]
+import os
+import pygame
 
-for j, row in enumerate(text_map):
-    for i, char in enumerate(row):
-        if char == '#':
-            world_map.add((i * TILE, j * TILE))
-            mini_map.add((i * MAP_TILE, j * MAP_TILE))
+pygame.display.set_mode((1200, 800))
+
+textures = {filename.split('.')[0]:pygame.image.load(f"data/sprites/slender/{filename}").convert_alpha() for filename in os.listdir(f"data/sprites/slender/")}

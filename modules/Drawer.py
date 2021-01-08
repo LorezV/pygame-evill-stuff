@@ -192,26 +192,26 @@ def ray_casting_npc_player(npc_x, npc_y, world_map, player_pos):
     return True
 
 
-class Interaction:
-    def __init__(self, player, sprites, drawer):
-        self.player = player
-        self.sprites = sprites
-        self.drawer = drawer
-
-    def npc_action(self):
-        for obj in self.sprites.objects_list:
-            if obj.flag == 'npc' and not obj.is_dead:
-                if ray_casting_npc_player(obj.sx, obj.sy, world_map,
-                                          self.player.pos):
-                    obj.npc_action_trigger = True
-                    self.npc_move(obj)
-                else:
-                    obj.npc_action_trigger = False
-
-    def npc_move(self, obj):
-        if obj.distance > obj.animation_dist:
-            dx = obj.sx - self.player.pos[0]
-            dy = obj.sy - self.player.pos[1]
-            obj.x = obj.sx + 1 if dx < 0 else obj.x - 1
-            obj.y = obj.sy + 1 if dy < 0 else obj.y - 1
-            obj.pos = (obj.x, obj.y)
+# class Interaction:
+#     def __init__(self, player, sprites, drawer):
+#         self.player = player
+#         self.sprites = sprites
+#         self.drawer = drawer
+#
+#     def npc_action(self):
+#         for obj in self.sprites.objects_list:
+#             if obj.flag == 'npc' and not obj.is_dead:
+#                 if ray_casting_npc_player(obj.sx, obj.sy, world_map,
+#                                           self.player.pos):
+#                     obj.npc_action_trigger = True
+#                     self.npc_move(obj)
+#                 else:
+#                     obj.npc_action_trigger = False
+#
+#     def npc_move(self, obj):
+#         if obj.distance > obj.animation_dist:
+#             dx = obj.sx - self.player.pos[0]
+#             dy = obj.sy - self.player.pos[1]
+#             obj.x = obj.sx + 1 if dx < 0 else obj.x - 1
+#             obj.y = obj.sy + 1 if dy < 0 else obj.y - 1
+#             obj.pos = (obj.x, obj.y)
