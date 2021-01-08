@@ -2,7 +2,7 @@ import pygame
 from modules.Settings import *
 from collections import deque
 from modules.Drawer import ray_casting_npc_player
-from modules.World import world_map
+from modules.World import world_map, collision_objects
 
 
 class Sprites:
@@ -10,7 +10,8 @@ class Sprites:
         self.sprite_parametrs = {
             'sprite_slender': {
                 'sprite': [pygame.image.load(
-                    f'data/sprites/slender/idle/{i}.png').convert_alpha() for i in
+                    f'data/sprites/slender/idle/{i}.png').convert_alpha() for i
+                           in
                            range(1, 9)],
                 'viewing_angles': True,
                 'shift': 0,
@@ -32,7 +33,7 @@ class Sprites:
             },
         }
         self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (8.7, 4))]
+            Slender(self.sprite_parametrs['sprite_slender'], (6.5, 1.5))]
 
 
 class SpriteObject:
@@ -164,13 +165,54 @@ class SpriteObject:
 class Slender(SpriteObject):
     def __init__(self, parameters, pos):
         super().__init__(parameters, pos)
+        self.rect = pygame.Rect(*self.pos, 50, 50)
+        self.slender_sound = pygame.mixer.Sound(
+            'data/sprites/slender/sounds/slender.mp3')
+        self.slender_move = False
+        self.volume = 1
+
+    def detect_collision(self, dx, dy):
+        collision_list = collision_objects
+        next_rect = self.rect.copy()
+        next_rect.move_ip(dx, dy)
+        hit_indexes = next_rect.collidelistall(collision_list)
+
+        if len(hit_indexes):
+            delta_x, delta_y = 0, 0
+            for hit_index in hit_indexes:
+                hit_rect = collision_list[hit_index]
+                if dx > 0:
+                    delta_x += next_rect.right - hit_rect.left
+                else:
+                    delta_x += hit_rect.right - next_rect.left
+                if dy > 0:
+                    delta_y += next_rect.bottom - hit_rect.top
+                else:
+                    delta_y += hit_rect.bottom - next_rect.top
+
+            if abs(delta_x - delta_y) < 10:
+                dx, dy = 0, 0
+            elif delta_x > delta_y:
+                dy = 0
+            elif delta_y > delta_x:
+                dx = 0
+        self.x += dx
+        self.y += dy
 
     def move(self, player):
         if self.distance > self.animation_dist:
+            if not self.slender_move:
+                self.slender_sound.stop()
+                self.volume = 1
+                self.slender_sound.set_volume(self.volume)
+                self.slender_sound.play(-1)
+            self.slender_move = True
             dx = self.sx - player.pos[0]
             dy = self.sy - player.pos[1]
-            self.x = self.sx + 1 if dx < 0 else self.x - 1
-            self.y = self.sy + 1 if dy < 0 else self.y - 1
+            dx = 1 if dx < 0 else - 1
+            dy = 1 if dy < 0 else - 1
+            self.detect_collision(dx, dy)
+            self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
 
     def action(self, player):
@@ -180,6 +222,11 @@ class Slender(SpriteObject):
                 self.npc_action_trigger = True
                 self.move(player)
             else:
+                self.volume -= 0.001
+                self.slender_sound.set_volume(self.volume)
+                if self.volume <= 0:
+                    self.slender_sound.stop()
+                self.slender_move = False
                 self.npc_action_trigger = False
 
     def update(self, player):
