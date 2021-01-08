@@ -15,6 +15,10 @@ class Game:
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
 
+    def terminate(self):
+        pygame.quit()
+        sys.exit()
+
 
 class GameManager:
     def __init__(self, game, labirint, menu):
@@ -53,11 +57,11 @@ class Sceene:
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                terminate()
+                self.game.terminate()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
-            terminate()
+            self.game.terminate()
         if keys[pygame.K_0]:
             _gamemanager.set_sceene(_gamemanager.sceenes["labirint"])
 
@@ -113,8 +117,3 @@ _game = Game()
 _labirint = Labirint(_game)
 _menu = Menu(_game)
 _gamemanager = GameManager(_game, _labirint, _menu)
-
-
-def terminate():
-    pygame.quit()
-    sys.exit()
