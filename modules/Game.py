@@ -14,6 +14,11 @@ class Game:
         self.player = Player(self.sprites)
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
+        self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
+        self.menu_picture = pygame.image.load('data/textures/menu.png')
+        pygame.mixer.music.load('data/music/sc_music.mp3')
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.1)
 
     def terminate(self):
         pygame.quit()
@@ -75,10 +80,49 @@ class Menu(Sceene, ABC):
 
     def game_loop(self):
         self.check_events()
-        self.game.screen.fill(BLUE)
+        self.game.screen.blit(self.game.menu_picture, (0, 0),
+                              (0, 0, WIDTH, HEIGHT))
+        start, exit, startf, exitf = self.draw_buttons()
+        pygame.draw.rect(self.game.screen, BLACK, start, border_radius=25,
+                         width=10)
+        self.game.screen.blit(startf,
+                              (start.centerx - 175, start.centery - 40))
+
+        pygame.draw.rect(self.game.screen, BLACK, exit, border_radius=25,
+                         width=10)
+        self.game.screen.blit(exitf, (exit.centerx - 120, exit.centery - 40))
+
+        label = self.game.font.render('Evill Stuff', 1, (0, 33, 92))
+        self.game.screen.blit(label, (280, 20))
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()
+        if start.collidepoint(mouse_pos):
+            pygame.draw.rect(self.game.screen, BLACK, start,
+                             border_radius=25)
+            self.game.screen.blit(startf,
+                                  ((start.centerx - 175, start.centery - 40)))
+            if mouse_click[0]:
+                pygame.mouse.set_visible(False)
+                pygame.mixer.music.stop()
+                _gamemanager.set_sceene(_gamemanager.labirint)
+        elif exit.collidepoint(mouse_pos):
+            pygame.draw.rect(self.game.screen, BLACK, exit, border_radius=25)
+            self.game.screen.blit(exitf,
+                                  ((exit.centerx - 120, exit.centery - 40)))
+            if mouse_click[0]:
+                self.game.terminate()
 
         pygame.display.flip()
-        self.game.clock.tick(FPS)
+
+    def draw_buttons(self):
+        start = self.game.font.render('START', 1, pygame.Color((0, 33, 92)))
+        button_start = pygame.Rect(0, 0, 400, 150)
+        button_start.center = HALF_WIDTH, HALF_HEIGHT
+        exit = self.game.font.render('EXIT', 1, pygame.Color((0, 33, 92)))
+        button_exit = pygame.Rect(0, 0, 400, 150)
+        button_exit.center = HALF_WIDTH, HALF_HEIGHT + 200
+        return button_start, button_exit, start, exit
 
     def check_events(self):
         super().check_events()
@@ -99,9 +143,9 @@ class Labirint(Sceene, ABC):
         self.game.screen.fill(BLACK)
         self.game.drawer.background(self.game.player.ang)
         self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures) + [obj.object_locate(self.game.player) for
-                                                                              obj in
-                                                                              self.game.sprites.objects_list])
+            ray_casting_walls(self.game.player, self.game.drawer.textures) + [
+                obj.object_locate(self.game.player) for obj in
+                self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player)
         self.game.drawer.interface(self.game.player)
         self.game.drawer.fps(self.game.clock)

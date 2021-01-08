@@ -19,7 +19,7 @@ class Drawer:
         render = self.font.render(display_fps, 0, GREEN)
         self.screen.blit(render, FPS_POS)
 
-    def mini_map(self, player, npc):
+    def mini_map(self, player):
         self.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
         # map_x_col, map_y_col = player.rect.x // MAP_SCALE,
@@ -37,10 +37,6 @@ class Drawer:
         # Draw slender rect
         pygame.draw.circle(self.screen_minimap, RED,
                            (int(map_x), int(map_y)), 5)
-        pygame.draw.rect(self.screen_minimap, RED,
-                         [npc.rect.x // MAP_SCALE, npc.rect.y // MAP_SCALE,
-                          npc.rect.width // MAP_SCALE,
-                          npc.rect.height // MAP_SCALE])
         for x, y in mini_map:
             pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
