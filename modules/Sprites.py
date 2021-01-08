@@ -26,17 +26,61 @@ class Sprites:
                 'animation_dist': 50,
                 'animation_speed': 8,
                 'blocked': True,
+                'is_trigger': False,
                 'flag': 'npc',
                 'obj_action': deque([pygame.image.load(
                     f'data/sprites/slender/animation_move/{i}.png').convert_alpha()
                                      for i in range(1, 7)])
             },
+            'sprite_note': {
+                'sprite': [pygame.image.load(f'data/sprites/note/1.png').convert_alpha(),
+                           pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()],
+                'viewing_angles': True,
+                'shift': 0,
+                'scale': (0.4, 0.4),
+                'side': 50,
+                'animation': deque(),
+                'death_animation': [],
+                'is_dead': None,
+                'dead_shift': None,
+                'animation_dist': 50,
+                'animation_speed': 8,
+                'blocked': True,
+                'is_trigger': True,
+                'flag': 'note',
+                'obj_action': deque()
+            }
         }
         self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (6.5, 1.5))]
+            Slender(self.sprite_parametrs['sprite_slender'], (6.5, 1.5)),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 2),
+                [pygame.image.load(f'data/sprites/note/1.png').convert_alpha(),
+                pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "1"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.2),
+                 [pygame.image.load(f'data/sprites/note/2.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "2"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.4),
+                 [pygame.image.load(f'data/sprites/note/3.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "3"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.6),
+                 [pygame.image.load(f'data/sprites/note/4.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "4"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.8),
+                 [pygame.image.load(f'data/sprites/note/5.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "5"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 3),
+                 [pygame.image.load(f'data/sprites/note/6.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "6"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 3.2),
+                 [pygame.image.load(f'data/sprites/note/7.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "7"),
+            Note(self.sprite_parametrs['sprite_note'], (2.98, 3.4),
+                 [pygame.image.load(f'data/sprites/note/8.png').convert_alpha(),
+                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "8"),
+        ]
 
 
-class SpriteObject:
+class SpriteObject():
     def __init__(self, parameters, pos):
         self.object = parameters['sprite'].copy()
         self.viewing_angles = parameters['viewing_angles']
@@ -58,6 +102,7 @@ class SpriteObject:
         self.npc_action_trigger = False
 
         self.blocked = parameters['blocked']
+        self.is_trigger = parameters['is_trigger']
         self.side = parameters['side']
         self.x, self.y = pos[0] * TILE, pos[1] * TILE
         self.pos = self.x - self.side // 2, self.y - self.side // 2
@@ -160,6 +205,18 @@ class SpriteObject:
             self.obj_action.rotate()
             self.animation_count = 0
         return sprite_object
+
+
+class Note(SpriteObject):
+    def __init__(self, parameters, pos, textures, title):
+        super().__init__(parameters, pos)
+        self.object = textures
+        self.title = title
+
+        if self.viewing_angles:
+            self.sprite_angles = [frozenset(range(325, 361)) | frozenset(range(1, 45))] + [frozenset(range(46, 325))]
+            self.sprite_positions = {angle: pos for angle, pos in
+                                     zip(self.sprite_angles, self.object)}
 
 
 class Slender(SpriteObject):

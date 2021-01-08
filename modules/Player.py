@@ -20,7 +20,7 @@ class Player:
         self.can_run = True
 
         # collision
-        self.side = 40
+        self.side = 60
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
         # self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for
         #                           obj in self.sprites.objects_list if
@@ -36,14 +36,15 @@ class Player:
         return self.angle
 
     def detect_collision(self, dx, dy):
-        collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for obj in self.sprites.objects_list if obj.blocked]
-        collision_list = collision_objects + collision_sprites
+        collision_sprites = [(pygame.Rect(*obj.pos, obj.side, obj.side), obj) for obj in self.sprites.objects_list
+                             if obj.blocked]
+        collision_list = collision_objects + [x[0] for x in collision_sprites if not x[1].is_trigger]
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_list)
 
         if len(hit_indexes):
-            self.on_player_collision_entered()
+            self.on_player_collision_entered(collision_sprites)
             delta_x, delta_y = 0, 0
             for hit_index in hit_indexes:
                 hit_rect = collision_list[hit_index]
@@ -65,8 +66,11 @@ class Player:
         self.x += dx
         self.y += dy
 
-    def on_player_collision_entered(self):
-        pass
+    def on_player_collision_entered(self, hit_sprites):
+        for rect, sprite in hit_sprites:
+            if sprite.flag == "note" and self.rect.colliderect(rect):
+                print(sprite.title)
+                del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
 
     def check_value(self, value):
         value = int(value)

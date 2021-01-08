@@ -19,7 +19,7 @@ class Drawer:
         render = self.font.render(display_fps, 0, GREEN)
         self.screen.blit(render, FPS_POS)
 
-    def mini_map(self, player):
+    def mini_map(self, player, sprites):
         self.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
         # map_x_col, map_y_col = player.rect.x // MAP_SCALE,
@@ -28,15 +28,18 @@ class Drawer:
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
 
-        # Draw collision rect
-        # pygame.draw.rect(self.screen_minimap, "green", (
-        # player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
-        # player.rect.width // MAP_SCALE,
-        # player.rect.height // MAP_SCALE))
+        for a in sprites.objects_list:
+            x, y = a.pos
+            pygame.draw.rect(self.screen_minimap, YELLOW, (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
-        # Draw slender rect
-        pygame.draw.circle(self.screen_minimap, RED,
-                           (int(map_x), int(map_y)), 5)
+        # Draw collision rect
+        pygame.draw.rect(self.screen_minimap, "green", (
+        player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
+        player.rect.width // MAP_SCALE,
+        player.rect.height // MAP_SCALE))
+
+        # pygame.draw.circle(self.screen_minimap, RED,
+        #                    (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
             pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))

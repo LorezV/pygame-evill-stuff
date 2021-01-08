@@ -68,7 +68,7 @@ class Sceene:
         if keys[pygame.K_ESCAPE]:
             self.game.terminate()
         if keys[pygame.K_0]:
-            _gamemanager.set_sceene(_gamemanager.sceenes["labirint"])
+            gamemanager.set_sceene(gamemanager.labirint)
 
 
 class Menu(Sceene, ABC):
@@ -101,15 +101,15 @@ class Menu(Sceene, ABC):
             pygame.draw.rect(self.game.screen, BLACK, start,
                              border_radius=25)
             self.game.screen.blit(startf,
-                                  ((start.centerx - 175, start.centery - 40)))
+                                  (start.centerx - 175, start.centery - 40))
             if mouse_click[0]:
                 pygame.mouse.set_visible(False)
                 pygame.mixer.music.stop()
-                _gamemanager.set_sceene(_gamemanager.labirint)
+                gamemanager.set_sceene(gamemanager.labirint)
         elif exit.collidepoint(mouse_pos):
             pygame.draw.rect(self.game.screen, BLACK, exit, border_radius=25)
             self.game.screen.blit(exitf,
-                                  ((exit.centerx - 120, exit.centery - 40)))
+                                  (exit.centerx - 120, exit.centery - 40))
             if mouse_click[0]:
                 self.game.terminate()
 
@@ -146,7 +146,7 @@ class Labirint(Sceene, ABC):
             ray_casting_walls(self.game.player, self.game.drawer.textures) + [
                 obj.object_locate(self.game.player) for obj in
                 self.game.sprites.objects_list])
-        self.game.drawer.mini_map(self.game.player)
+        self.game.drawer.mini_map(self.game.player, _game.sprites)
         self.game.drawer.interface(self.game.player)
         self.game.drawer.fps(self.game.clock)
 
@@ -160,4 +160,4 @@ class Labirint(Sceene, ABC):
 _game = Game()
 _labirint = Labirint(_game)
 _menu = Menu(_game)
-_gamemanager = GameManager(_game, _labirint, _menu)
+gamemanager = GameManager(_game, _labirint, _menu)
