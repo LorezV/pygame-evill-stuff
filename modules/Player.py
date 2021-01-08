@@ -97,8 +97,6 @@ class Player:
         sin_a = math.sin(self.angle)
         cos_a = math.cos(self.angle)
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
-            exit()
 
         if keys[pygame.K_w]:
             dx = self.player_speed * cos_a

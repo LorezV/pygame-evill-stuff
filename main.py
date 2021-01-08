@@ -1,7 +1,6 @@
-import pygame
-from modules.Game import Game
+from modules.Game import _gamemanager
 
-game = Game()
 
-while True:
-    game.to_render.game_loop()
+if __name__ == "__main__":
+    while True:
+        _gamemanager.update()
