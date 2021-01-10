@@ -20,7 +20,7 @@ class Player:
         self.can_run = True
 
         # collision
-        self.side = 60
+        self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
         # self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for
         #                           obj in self.sprites.objects_list if
@@ -69,7 +69,6 @@ class Player:
     def on_player_collision_entered(self, hit_sprites):
         for rect, sprite in hit_sprites:
             if sprite.flag == "note" and self.rect.colliderect(rect):
-                print(sprite.title)
                 del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
 
     def check_value(self, value):
