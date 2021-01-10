@@ -1,4 +1,5 @@
 import math
+import win32api
 
 # screen settings
 SIZE = WIDTH, HEIGHT = 1920, 1080
@@ -36,7 +37,7 @@ MAX_DEPTH = 800
 DELTA_ANGLE = FOV / NUM_RAYS
 DIST = NUM_RAYS / (2 * math.tan(HALF_FOV))
 PROJ_COEFF = 3 * DIST * TILE
-SCALE = WIDTH // NUM_RAYS
+SCALE = math.ceil(WIDTH / NUM_RAYS)
 
 # player
 PLAYER_SPEED = 2
