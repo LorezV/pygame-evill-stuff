@@ -30,17 +30,16 @@ conj_dict = {}
 world_map = Dict.empty(key_type=types.UniTuple(int32, 2), value_type=int32)
 mini_map = set()
 collision_objects = []
+notes_spawn = []
 for j, row in enumerate(matrix_map):
     for i, char in enumerate(row):
         if char:
             mini_map.add((i * MAP_TILE, j * MAP_TILE))
             collision_objects.append(
                 pygame.Rect(i * TILE, j * TILE, TILE, TILE))
-            if char == 1:
-                world_map[(i * TILE, j * TILE)] = 1
-            elif char == 2:
-                world_map[(i * TILE, j * TILE)] = 2
+            world_map[(i * TILE, j * TILE)] = char
         else:
             conj_dict[(i, j)] = find_new_nodes(i, j)
-
-print(world_map)
+            if i != len(matrix_map[0]) - 1:
+                if matrix_map[j][i + 1] == 2:
+                    notes_spawn.append((i, j))

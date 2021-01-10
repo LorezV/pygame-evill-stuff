@@ -1,8 +1,7 @@
 import math
-import win32api
 
 # screen settings
-SIZE = WIDTH, HEIGHT = 1920, 1080
+SIZE = WIDTH, HEIGHT = 1200, 800
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 PENTA_HEIGHT = 5 * HEIGHT

@@ -2,8 +2,9 @@ import pygame
 from modules.Settings import *
 from collections import deque
 from modules.Drawer import ray_casting_npc_player
-from modules.World import world_map, collision_objects, matrix_map, conj_dict
+from modules.World import world_map, collision_objects, conj_dict, notes_spawn
 from math import ceil
+from random import sample
 
 
 class Sprites:
@@ -54,53 +55,94 @@ class Sprites:
                 'obj_action': deque()
             }
         }
+        coords = sample(notes_spawn, 8)
         self.objects_list = [
             Slender(self.sprite_parametrs['sprite_slender'], (6.5, 30.5)),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 2),
-                 [pygame.image.load(f'data/sprites/note/1.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "1",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/1.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/1_unfound.png").convert_alpha())),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.2),
-                 [pygame.image.load(f'data/sprites/note/2.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "2",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/2.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/2_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.4),
-                 [pygame.image.load(f'data/sprites/note/3.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "3",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/3.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/3_unfound.png").convert_alpha())
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[0][0] + 0.98, coords[0][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/1.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "1",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/1.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/1_unfound.png").convert_alpha())),
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[1][0] + 0.98, coords[1][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/2.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "2",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/2.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/2_unfound.png").convert_alpha())
                  ),
             Note(self.sprite_parametrs['sprite_note'],
-                 (2.98, 2.6), [pygame.image.load(f'data/sprites/note/4.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "4",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/4.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/4_unfound.png").convert_alpha())),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 2.8),
-                 [pygame.image.load(f'data/sprites/note/5.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "5",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/5.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/5_unfound.png").convert_alpha())
+                 (coords[2][0] + 0.98, coords[2][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/3.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "3",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/3.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/3_unfound.png").convert_alpha())
                  ),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 3),
-                 [pygame.image.load(f'data/sprites/note/6.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "6",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/6.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/6_unfound.png").convert_alpha())
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[3][0] + 0.98, coords[3][1] + 0.5), [pygame.image.load(
+                    f'data/sprites/note/4.png').convert_alpha(),
+                                                             pygame.image.load(
+                                                                 f"data/sprites/note/angled.png").convert_alpha()],
+                 "4",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/4.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/4_unfound.png").convert_alpha())),
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[4][0] + 0.98, coords[4][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/5.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "5",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/5.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/5_unfound.png").convert_alpha())
                  ),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 3.2),
-                 [pygame.image.load(f'data/sprites/note/7.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "7",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/7.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/7_unfound.png").convert_alpha())
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[5][0] + 0.98, coords[5][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/6.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "6",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/6.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/6_unfound.png").convert_alpha())
                  ),
-            Note(self.sprite_parametrs['sprite_note'], (2.98, 3.4),
-                 [pygame.image.load(f'data/sprites/note/8.png').convert_alpha(),
-                  pygame.image.load(f"data/sprites/note/angled.png").convert_alpha()], "8",
-                 NoteIcon(pygame.image.load(f"data/sprites/note/icons/8.png").convert_alpha(),
-                          pygame.image.load(f"data/sprites/note/icons/8_unfound.png").convert_alpha())
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[6][0] + 0.98, coords[6][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/7.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "7",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/7.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/7_unfound.png").convert_alpha())
+                 ),
+            Note(self.sprite_parametrs['sprite_note'],
+                 (coords[7][0] + 0.98, coords[7][1] + 0.5),
+                 [pygame.image.load(
+                     f'data/sprites/note/8.png').convert_alpha(),
+                  pygame.image.load(
+                      f"data/sprites/note/angled.png").convert_alpha()], "8",
+                 NoteIcon(pygame.image.load(
+                     f"data/sprites/note/icons/8.png").convert_alpha(),
+                          pygame.image.load(
+                              f"data/sprites/note/icons/8_unfound.png").convert_alpha())
                  ),
         ]
 
@@ -321,7 +363,6 @@ class Slender(SpriteObject):
             dy = self.sy - player.pos[1]
             dx = 2 if dx < 0 else - 2
             dy = 2 if dy < 0 else - 2
-            print(dx, dy)
             self.detect_collision(dx, dy)
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
@@ -329,8 +370,7 @@ class Slender(SpriteObject):
     def action(self, player):
         px, py = ceil(player.x // TILE), ceil(player.y // TILE)
         sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
-        if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos) or (
-                px == sx or py == sy):
+        if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):
             self.npc_action_trigger = True
             self.move(player)
             return

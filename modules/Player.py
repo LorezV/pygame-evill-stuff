@@ -68,7 +68,6 @@ class Player:
     def on_player_collision_entered(self, hit_sprites):
         for rect, sprite in hit_sprites:
             if sprite.flag == "note" and self.rect.colliderect(rect):
-                print(sprite.title)
                 self.notes[self.notes.index(sprite)].noteIcon.set_founded()
                 del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
 
