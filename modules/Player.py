@@ -18,14 +18,13 @@ class Player:
         self.health = 100
         self.stamina = 100
         self.can_run = True
+        self.notes = [x for x in sprites.objects_list if x.flag == "note"]
+        self.current_notes = []
+        self.notes_sprite_group = pygame.sprite.Group()
 
         # collision
-        self.side = 60
+        self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
-        # self.collision_sprites = [pygame.Rect(*obj.pos, obj.side, obj.side) for
-        #                           obj in self.sprites.objects_list if
-        #                           obj.blocked]
-        # self.collision_list = collision_objects + self.collision_sprites
 
     @property
     def pos(self):
@@ -70,6 +69,7 @@ class Player:
         for rect, sprite in hit_sprites:
             if sprite.flag == "note" and self.rect.colliderect(rect):
                 print(sprite.title)
+                self.notes[self.notes.index(sprite)].noteIcon.set_founded()
                 del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
 
     def check_value(self, value):

@@ -1,5 +1,6 @@
 import sys
 from abc import abstractmethod, ABC
+import pygame
 from modules.Player import Player
 from modules.Sprites import *
 from modules.Drawer import Drawer, ray_casting_walls
@@ -129,8 +130,9 @@ class Menu(Sceene, ABC):
 
 
 class Labirint(Sceene, ABC):
-    def __init__(self, game):
+    def __init__(self, game, labirint_interface):
         super().__init__(game)
+        self.labirint_interface = labirint_interface
 
     def init_sceene_settings(self):
         pygame.mouse.set_visible(False)
@@ -148,6 +150,7 @@ class Labirint(Sceene, ABC):
                 self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, _game.sprites)
         self.game.drawer.interface(self.game.player)
+        self.labirint_interface.render()
         self.game.drawer.fps(self.game.clock)
 
         pygame.display.flip()
@@ -156,8 +159,25 @@ class Labirint(Sceene, ABC):
     def check_events(self):
         super().check_events()
 
+class LabirintInterface():
+    def __init__(self):
+        self.note_group = pygame.sprite.Group()
+        self.notes = [note for note in _game.sprites.objects_list if note.flag == "note"]
+
+        for i in range(len(_game.sprites.objects_list)):
+            sprite = _game.sprites.objects_list[len(_game.sprites.objects_list) - i - 1]
+            if sprite.flag == 'note':
+                sprite.noteIcon.move((WIDTH - 70) - i * 50, 10)
+
+    def render(self):
+        noteicons_group.draw(_game.screen)
+        noteicons_group.update()
+
+
 
 _game = Game()
-_labirint = Labirint(_game)
+_labirint_interface = LabirintInterface()
+_labirint = Labirint(_game, _labirint_interface)
 _menu = Menu(_game)
+
 gamemanager = GameManager(_game, _labirint, _menu)

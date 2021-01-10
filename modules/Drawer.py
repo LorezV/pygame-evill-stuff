@@ -3,6 +3,7 @@ from modules.Settings import *
 from modules.World import world_map, mini_map, WORLD_WIDTH, WORLD_HEIGHT
 from numba import njit
 
+import random
 
 class Drawer:
     def __init__(self, screen, screen_minimap):
@@ -28,21 +29,25 @@ class Drawer:
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
 
+        # Draw sprites collision rects
         for a in sprites.objects_list:
             x, y = a.pos
-            pygame.draw.rect(self.screen_minimap, YELLOW, (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
+            pygame.draw.rect(self.screen_minimap, (random.randrange(0, 255, 1), random.randrange(0, 255, 1), random.randrange(0, 255, 1)),
+                             (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
+        # Draw player pn minimap
+        pygame.draw.circle(self.screen_minimap, RED,
+                           (int(map_x), int(map_y)), 5)
         # Draw collision rect
-        pygame.draw.rect(self.screen_minimap, "green", (
-        player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
-        player.rect.width // MAP_SCALE,
-        player.rect.height // MAP_SCALE))
+        # pygame.draw.rect(self.screen_minimap, "green", (
+        # player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
+        # player.rect.width // MAP_SCALE,
+        # player.rect.height // MAP_SCALE))
 
-        # pygame.draw.circle(self.screen_minimap, RED,
-        #                    (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
             pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
+
         self.screen.blit(self.screen_minimap, MAP_POS)
 
     def background(self, angle):
@@ -54,6 +59,10 @@ class Drawer:
         pygame.draw.rect(self.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
         pass
+
+    def collected_notes(self, player):
+        for x in range(len(player.notes)):
+            pygame.sprite.S
 
     def interface(self, player):
         # Player health
