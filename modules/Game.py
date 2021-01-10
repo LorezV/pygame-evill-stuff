@@ -10,13 +10,14 @@ class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode(SIZE)
-        self.screen_minimap = pygame.Surface(MINIMAP_RES)
+        self.screen_minimap = pygame.Surface(MAP_RESOLUTION)
         self.sprites = Sprites()
         self.player = Player(self.sprites)
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
+        self.menu_picture = pygame.transform.scale(self.menu_picture, (WIDTH, HEIGHT))
         pygame.mixer.music.load('data/music/sc_music.mp3')
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.1)
@@ -75,6 +76,7 @@ class Sceene:
 class Menu(Sceene, ABC):
     def __init__(self, game):
         super().__init__(game)
+        self.menu_sprites_group = pygame.sprite.Group()
 
     def init_sceene_settings(self):
         pygame.mouse.set_visible(True)
@@ -94,7 +96,7 @@ class Menu(Sceene, ABC):
         self.game.screen.blit(exitf, (exit.centerx - 120, exit.centery - 40))
 
         label = self.game.font.render('Evill Stuff', 1, (0, 33, 92))
-        self.game.screen.blit(label, (280, 20))
+        self.game.screen.blit(label, (WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()

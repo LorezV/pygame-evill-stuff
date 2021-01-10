@@ -42,3 +42,5 @@ for j, row in enumerate(matrix_map):
                 world_map[(i * TILE, j * TILE)] = 2
         else:
             conj_dict[(i, j)] = find_new_nodes(i, j)
+
+print(world_map)

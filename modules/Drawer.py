@@ -5,15 +5,18 @@ from numba import njit
 
 import random
 
+
 class Drawer:
     def __init__(self, screen, screen_minimap):
         self.screen = screen
         self.screen_minimap = screen_minimap
         self.font = pygame.font.SysFont('arial', 26, bold=True)
+        sky_image = pygame.image.load('data/textures/sky.png').convert()
+        sky_image = pygame.transform.scale(sky_image, (WIDTH, HALF_HEIGHT))
         self.textures = {
             2: pygame.image.load('data/textures/wall.png').convert(),
             1: pygame.image.load('data/textures/fence.png').convert_alpha(),
-            't': pygame.image.load('data/textures/sky.png').convert()}
+            'sky': sky_image}
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
@@ -29,40 +32,32 @@ class Drawer:
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
 
-        # Draw sprites collision rects
         for a in sprites.objects_list:
             x, y = a.pos
-            pygame.draw.rect(self.screen_minimap, (random.randrange(0, 255, 1), random.randrange(0, 255, 1), random.randrange(0, 255, 1)),
+            pygame.draw.rect(self.screen_minimap, YELLOW,
                              (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
-        # Draw player pn minimap
-        pygame.draw.circle(self.screen_minimap, RED,
-                           (int(map_x), int(map_y)), 5)
         # Draw collision rect
-        # pygame.draw.rect(self.screen_minimap, "green", (
-        # player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
-        # player.rect.width // MAP_SCALE,
-        # player.rect.height // MAP_SCALE))
+        pygame.draw.rect(self.screen_minimap, "green", (
+            player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
+            player.rect.width // MAP_SCALE,
+            player.rect.height // MAP_SCALE))
 
+        # pygame.draw.circle(self.screen_minimap, RED,
+        #                    (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
             pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
-
         self.screen.blit(self.screen_minimap, MAP_POS)
 
     def background(self, angle):
         top_offset = -5 * math.degrees(angle) % WIDTH
-        self.screen.blit(self.textures['t'], (top_offset, 0))
-        self.screen.blit(self.textures['t'], (top_offset - WIDTH, 0))
-        self.screen.blit(self.textures['t'], (top_offset + WIDTH, 0))
+        self.screen.blit(self.textures['sky'], (top_offset, 0))
+        self.screen.blit(self.textures['sky'], (top_offset - WIDTH, 0))
+        self.screen.blit(self.textures['sky'], (top_offset + WIDTH, 0))
 
         pygame.draw.rect(self.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
-        pass
-
-    def collected_notes(self, player):
-        for x in range(len(player.notes)):
-            pygame.sprite.S
 
     def interface(self, player):
         # Player health
