@@ -2,12 +2,12 @@ import pygame
 from modules.Settings import *
 from modules.World import collision_objects
 
-
 class Player:
-    def __init__(self, sprites):
+    def __init__(self, sprites, gamemanager):
         super().__init__()
         self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
+        self.gamemanager = gamemanager
 
         self.sprites = sprites
 
@@ -82,6 +82,8 @@ class Player:
 
     def set_health(self, health):
         self.health = self.check_value(health)
+        if self.health == 0:
+            self.gamemanager.set_sceene(self.gamemanager.menu)
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)
@@ -123,7 +125,7 @@ class Player:
             self.angle += 0.02
 
         if keys[pygame.K_SPACE]:
-            self.set_health(25)
+            self.set_health(0)
 
         if keys[pygame.K_LSHIFT] and self.can_run:
             self.player_speed = PLAYER_SPEED + 1

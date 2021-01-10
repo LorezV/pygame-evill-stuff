@@ -1,9 +1,27 @@
 import sys
 from abc import abstractmethod, ABC
-import pygame
 from modules.Player import Player
 from modules.Sprites import *
 from modules.Drawer import Drawer, ray_casting_walls
+
+
+class GameManager:
+    def __init__(self):
+        pass
+
+    def init_sceenes(self, game, labirint, menu):
+        self.game = game
+        self.menu = menu
+        self.labirint = labirint
+        _menu.init_sceene_settings()
+        self.sceene = self.menu
+
+    def set_sceene(self, sceene):
+        sceene.init_sceene_settings()
+        self.sceene = sceene
+
+    def update(self):
+        self.sceene.game_loop()
 
 
 class Game:
@@ -12,7 +30,7 @@ class Game:
         self.screen = pygame.display.set_mode(SIZE)
         self.screen_minimap = pygame.Surface(MAP_RESOLUTION)
         self.sprites = Sprites()
-        self.player = Player(self.sprites)
+        self.player = Player(self.sprites, gamemanager)
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
@@ -25,28 +43,6 @@ class Game:
     def terminate(self):
         pygame.quit()
         sys.exit()
-
-
-class GameManager:
-    def __init__(self, game, labirint, menu):
-        self.game = game
-        self.menu = menu
-        self.labirint = labirint
-
-        self.sceenes = {
-            "labirint": self.labirint,
-            "menu": self.menu,
-        }
-
-        _menu.init_sceene_settings()
-        self.sceene = self.menu
-
-    def set_sceene(self, sceene):
-        sceene.init_sceene_settings()
-        self.sceene = sceene
-
-    def update(self):
-        self.sceene.game_loop()
 
 
 class Sceene:
@@ -69,8 +65,6 @@ class Sceene:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             self.game.terminate()
-        if keys[pygame.K_0]:
-            gamemanager.set_sceene(gamemanager.labirint)
 
 
 class Menu(Sceene, ABC):
@@ -95,7 +89,7 @@ class Menu(Sceene, ABC):
                          width=10)
         self.game.screen.blit(exitf, (exit.centerx - 120, exit.centery - 40))
 
-        label = self.game.font.render('Evill Stuff', 1, (0, 33, 92))
+        label = self.game.font.render('Evill Stuff', 1, MENU_TITLE_COLOR)
         self.game.screen.blit(label, (WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
 
         mouse_pos = pygame.mouse.get_pos()
@@ -108,6 +102,8 @@ class Menu(Sceene, ABC):
             if mouse_click[0]:
                 pygame.mouse.set_visible(False)
                 pygame.mixer.music.stop()
+                gamemanager.game = Game()
+                gamemanager.labirint = Labirint(gamemanager.game, _labirint_interface)
                 gamemanager.set_sceene(gamemanager.labirint)
         elif exit.collidepoint(mouse_pos):
             pygame.draw.rect(self.game.screen, BLACK, exit, border_radius=25)
@@ -119,10 +115,10 @@ class Menu(Sceene, ABC):
         pygame.display.flip()
 
     def draw_buttons(self):
-        start = self.game.font.render('START', 1, pygame.Color((0, 33, 92)))
+        start = self.game.font.render('START', 1, pygame.Color((MENU_BUTTON_START_COLOR)))
         button_start = pygame.Rect(0, 0, 400, 150)
         button_start.center = HALF_WIDTH, HALF_HEIGHT
-        exit = self.game.font.render('EXIT', 1, pygame.Color((0, 33, 92)))
+        exit = self.game.font.render('EXIT', 1, pygame.Color(MENU_BUTTON_EXIT_COLOR))
         button_exit = pygame.Rect(0, 0, 400, 150)
         button_exit.center = HALF_WIDTH, HALF_HEIGHT + 200
         return button_start, button_exit, start, exit
@@ -161,6 +157,7 @@ class Labirint(Sceene, ABC):
     def check_events(self):
         super().check_events()
 
+
 class LabirintInterface():
     def __init__(self):
         self.note_group = pygame.sprite.Group()
@@ -176,10 +173,9 @@ class LabirintInterface():
         noteicons_group.update()
 
 
-
+gamemanager = GameManager()
 _game = Game()
 _labirint_interface = LabirintInterface()
 _labirint = Labirint(_game, _labirint_interface)
 _menu = Menu(_game)
-
-gamemanager = GameManager(_game, _labirint, _menu)
+gamemanager.init_sceenes(_game, _labirint, _menu)

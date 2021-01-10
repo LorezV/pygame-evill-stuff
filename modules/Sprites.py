@@ -222,7 +222,7 @@ class SpriteObject():
                 sprite_object = self.npc_in_action()
             else:
                 self.object = self.visible_sprite()
-                sprite_object = self.sprite_animation()
+                sprite_object = self.sprite_animation(player)
 
             sprite_pos = (self.current_ray * SCALE - half_sprite_width,
                           HALF_HEIGHT - half_sprite_height + shift)
@@ -232,11 +232,12 @@ class SpriteObject():
         else:
             return False,
 
-    def sprite_animation(self):
+    def sprite_animation(self, player):
         if self.animation and self.distance < self.animation_dist:
             sprite_object = self.animation[0]
             if self.animation_count < self.animation_speed:
                 self.animation_count += 1
+                player.set_health(player.health - 2)
             else:
                 self.animation.rotate()
                 self.animation_count = 0
@@ -320,6 +321,7 @@ class Slender(SpriteObject):
             'data/sprites/slender/sounds/slender.mp3')
         self.slender_move = False
         self.volume = 1
+        self.last_timer_attack = pygame.time.get_ticks()
 
     def detect_collision(self, dx, dy):
         collision_list = collision_objects
@@ -348,6 +350,20 @@ class Slender(SpriteObject):
                 dx = 0
         self.x += dx
         self.y += dy
+
+    def sprite_animation(self, player):
+        if self.animation and self.distance < self.animation_dist and self.last_timer_attack < pygame.time.get_ticks() - 5000:
+            self.last_timer_attack = pygame.time.get_ticks()
+            sprite_object = self.animation[0]
+            if self.animation_count < self.animation_speed:
+                self.animation_count += 1
+                player.set_health(player.health - 10)
+            else:
+                self.animation.rotate()
+                self.animation_count = 0
+            return sprite_object
+        return self.object
+
 
     def move(self, player):
         if self.distance > self.animation_dist or (

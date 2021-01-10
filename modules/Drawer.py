@@ -3,8 +3,6 @@ from modules.Settings import *
 from modules.World import world_map, mini_map, WORLD_WIDTH, WORLD_HEIGHT
 from numba import njit
 
-import random
-
 
 class Drawer:
     def __init__(self, screen, screen_minimap):
@@ -16,6 +14,7 @@ class Drawer:
         self.textures = {
             2: pygame.image.load('data/textures/wall.png').convert(),
             1: pygame.image.load('data/textures/fence.png').convert_alpha(),
+            3: pygame.image.load('data/textures/door.png').convert_alpha(),
             'sky': sky_image}
 
     def fps(self, clock):
@@ -38,13 +37,13 @@ class Drawer:
                              (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
         # Draw collision rect
-        pygame.draw.rect(self.screen_minimap, "green", (
-            player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
-            player.rect.width // MAP_SCALE,
-            player.rect.height // MAP_SCALE))
+        # pygame.draw.rect(self.screen_minimap, "green", (
+        #     player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
+        #     player.rect.width // MAP_SCALE,
+        #     player.rect.height // MAP_SCALE))
 
-        # pygame.draw.circle(self.screen_minimap, RED,
-        #                    (int(map_x), int(map_y)), 5)
+        pygame.draw.circle(self.screen_minimap, RED,
+                           (int(map_x), int(map_y)), 5)
         for x, y in mini_map:
             pygame.draw.rect(self.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))

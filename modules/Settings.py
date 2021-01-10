@@ -1,6 +1,8 @@
 import math
+import win32api
 
 # screen settings
+#SIZE = WIDTH, HEIGHT = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
 SIZE = WIDTH, HEIGHT = 1200, 800
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
@@ -62,3 +64,7 @@ RED = (255, 10, 10)
 GREEN = (0, 153, 0)
 BLUE = (0, 0, 128)
 YELLOW = (255, 204, 0)
+
+MENU_TITLE_COLOR = (255, 200, 0)
+MENU_BUTTON_START_COLOR = (255, 10, 10)
+MENU_BUTTON_EXIT_COLOR = (0, 33, 92)
