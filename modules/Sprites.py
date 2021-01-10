@@ -277,7 +277,9 @@ class Slender(SpriteObject):
         self.y += dy
 
     def move(self, player):
-        if self.distance > self.animation_dist:
+        if self.distance > self.animation_dist or (
+                (self.x - player.pos[0]) ** 2 + (
+                self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
             if not self.slender_move:
                 self.slender_sound.stop()
                 self.volume = 1
@@ -286,8 +288,9 @@ class Slender(SpriteObject):
             self.slender_move = True
             dx = self.sx - player.pos[0]
             dy = self.sy - player.pos[1]
-            dx = 1 if dx < 0 else - 1
-            dy = 1 if dy < 0 else - 1
+            dx = 2 if dx < 0 else - 2
+            dy = 2 if dy < 0 else - 2
+            print(dx, dy)
             self.detect_collision(dx, dy)
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
@@ -295,7 +298,8 @@ class Slender(SpriteObject):
     def action(self, player):
         px, py = ceil(player.x // TILE), ceil(player.y // TILE)
         sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
-        if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos) or (px == sx or py == sy):
+        if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos) or (
+                px == sx or py == sy):
             self.npc_action_trigger = True
             self.move(player)
             return
