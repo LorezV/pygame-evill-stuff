@@ -156,7 +156,7 @@ class Lose(Sceene, ABC):
         pygame.draw.rect(self.game.screen, YELLOW, restart, border_radius=25,
                          width=10)
         self.game.screen.blit(restartf,
-                              (restart.centerx - 240, restart.centery - 40))
+                              (restart.centerx - 120, restart.centery - 40))
 
         label = self.game.font.render('GAME OVER', 1, RED)
         self.game.screen.blit(label, (
@@ -169,8 +169,7 @@ class Lose(Sceene, ABC):
                              border_radius=25)
             self.game.screen.blit(restartf,
                                   (
-                                      restart.centerx - 240,
-                                      restart.centery - 40))
+                                  restart.centerx - 120, restart.centery - 40))
             if mouse_click[0]:
                 self.game.terminate()
         pygame.display.flip()
@@ -178,7 +177,7 @@ class Lose(Sceene, ABC):
     def draw_buttons(self):
         restart = self.game.font.render('EXIT', 1,
                                         pygame.Color((0, 33, 92)))
-        button_restart = pygame.Rect(0, 0, 600, 150)
+        button_restart = pygame.Rect(0, 0, 400, 150)
         button_restart.center = HALF_WIDTH, HALF_HEIGHT + 200
         return button_restart, restart
 
@@ -202,10 +201,12 @@ class LevelTwo(Sceene, ABC):
         self.check_events()
         self.game.screen.fill(BLACK)
         background_image = pygame.image.load("data/textures/sky.png")
-        background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+        background_image = pygame.transform.scale(background_image,
+                                                  (WIDTH, HEIGHT))
         self.game.screen.blit(background_image, (0, 0))
         text_render = self.game.font.render("To be continue", 1, WHITE)
-        self.game.screen.blit(text_render, (100, HEIGHT - 100 - text_render.get_height()))
+        self.game.screen.blit(text_render,
+                              (100, HEIGHT - 100 - text_render.get_height()))
         pygame.display.flip()
 
     def check_events(self):
@@ -217,9 +218,11 @@ class Labirint(Sceene, ABC):
         super().__init__(game)
         self.labirint_interface = labirint_interface
 
+
     def init_sceene_settings(self):
         pygame.mouse.set_visible(False)
-
+        pygame.mixer.music.load('data/music/gameplay_music.mp3')
+        pygame.mixer.music.play(-1)
     def game_loop(self):
         self.check_events()
         self.game.player.movement()

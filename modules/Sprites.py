@@ -25,7 +25,7 @@ class Sprites:
                 'death_animation': [],
                 'is_dead': None,
                 'dead_shift': None,
-                'animation_dist': 50,
+                'animation_dist': 100,
                 'animation_speed': 2,
                 'blocked': True,
                 'is_trigger': False,
@@ -320,14 +320,15 @@ class Slender(SpriteObject):
         super().__init__(parameters, pos)
         self.rect = pygame.Rect(*self.pos, 50, 50)
         self.slender_sound = pygame.mixer.Sound(
-            'data/sprites/slender/sounds/slender.mp3')
-        self.slender_move = False
-        self.volume = 1
+            'data/sprites/slender/sounds/moving.mp3')
+        self.slender_sound.play(-1)
+        self.slender_sound.set_volume(0)
         self.attack_cooldown = 200
         self.count = 0
         self.sprite_angles = [frozenset(range(i, i + 1)) for i in
                               range(361)]
-        self.sprite_positions = {angle: self.object[0] for angle in self.sprite_angles}
+        self.sprite_positions = {angle: self.object[0] for angle in
+                                 self.sprite_angles}
 
     def detect_collision(self, dx, dy):
         collision_list = collision_objects
@@ -382,12 +383,6 @@ class Slender(SpriteObject):
         if self.distance > self.animation_dist or (
                 (self.x - player.pos[0]) ** 2 + (
                 self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
-            if not self.slender_move:
-                self.slender_sound.stop()
-                self.volume = 1
-                self.slender_sound.set_volume(self.volume)
-                self.slender_sound.play(-1)
-            self.slender_move = True
             dx = self.sx - player.pos[0]
             dy = self.sy - player.pos[1]
             dx = 2 if dx < 0 else - 2
@@ -397,17 +392,17 @@ class Slender(SpriteObject):
             self.pos = (self.x, self.y)
 
     def action(self, player):
+        delta = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
+        if delta < 1500:
+            self.slender_sound.set_volume(1 - delta / 1500)
+        else:
+            self.slender_sound.set_volume(0)
         px, py = ceil(player.x // TILE), ceil(player.y // TILE)
         sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
         if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):
             self.npc_action_trigger = True
             self.move(player)
             return
-        self.volume -= 0.001
-        self.slender_sound.set_volume(self.volume)
-        if self.volume <= 0:
-            self.slender_sound.stop()
-        self.slender_move = False
         self.npc_action_trigger = False
         visited = bfs(px, py, sx, sy)
         cur_node = (px, py)
