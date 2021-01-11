@@ -2,12 +2,12 @@ import pygame
 from modules.Settings import *
 from modules.World import collision_objects
 
+
 class Player:
     def __init__(self, sprites, gamemanager, drawer):
         super().__init__()
         self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
-
 
         self.sprites = sprites
         self.gamemanager = gamemanager
@@ -37,9 +37,11 @@ class Player:
         return self.angle
 
     def detect_collision(self, dx, dy):
-        collision_sprites = [(pygame.Rect(*obj.pos, obj.side, obj.side), obj) for obj in self.sprites.objects_list
+        collision_sprites = [(pygame.Rect(*obj.pos, obj.side, obj.side), obj)
+                             for obj in self.sprites.objects_list
                              if obj.blocked]
-        collision_list = collision_objects + [x[0] for x in collision_sprites if not x[1].is_trigger]
+        collision_list = collision_objects + [x[0] for x in collision_sprites
+                                              if not x[1].is_trigger]
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_list)
@@ -71,7 +73,8 @@ class Player:
         for rect, sprite in hit_sprites:
             if sprite.flag == "note" and self.rect.colliderect(rect):
                 self.notes[self.notes.index(sprite)].noteIcon.set_founded()
-                del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
+                del self.sprites.objects_list[
+                    self.sprites.objects_list.index(sprite)]
 
                 all_notes_founded = True
                 for note in self.notes:
@@ -108,9 +111,8 @@ class Player:
         self.rect.center = self.x, self.y
         self.angle %= DOUBLE_PI
 
-        if  70 < self.x < 170 and 290 < self.y < 390 and self.gamemanager.portal_open:
+        if 70 < self.x < 170 and 290 < self.y < 390 and self.gamemanager.portal_open:
             self.gamemanager.set_sceene(self.gamemanager.level_two)
-
 
     def keys_control(self):
         sin_a = math.sin(self.angle)

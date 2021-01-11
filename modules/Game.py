@@ -195,7 +195,7 @@ class LevelTwo(Sceene, ABC):
         pygame.mixer.quit()
         pygame.mixer.init()
         pygame.mixer.music.set_volume(1)
-        pygame.mixer.music.load('data/music/lose_music.mp3')
+        pygame.mixer.music.load('data/music/to_be_continued.mp3')
         pygame.mixer.music.play(-1)
 
     def game_loop(self):
