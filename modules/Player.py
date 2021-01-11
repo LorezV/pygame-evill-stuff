@@ -111,7 +111,8 @@ class Player:
         self.rect.center = self.x, self.y
         self.angle %= DOUBLE_PI
 
-        if 70 < self.x < 170 and 290 < self.y < 390 and self.gamemanager.portal_open:
+        if PORTAL_COORDS[0] - 50 < self.x < PORTAL_COORDS[0] + 50 and PORTAL_COORDS[1] - 50 < self.y < PORTAL_COORDS[
+            1] + 50 and self.gamemanager.portal_open:
             self.gamemanager.set_sceene(self.gamemanager.level_two)
 
     def keys_control(self):
@@ -139,9 +140,6 @@ class Player:
             self.angle -= 0.02
         if keys[pygame.K_RIGHT]:
             self.angle += 0.02
-
-        if keys[pygame.K_SPACE]:
-            print(self.pos)
 
         if keys[pygame.K_LSHIFT] and self.can_run:
             self.player_speed = PLAYER_SPEED + 1
