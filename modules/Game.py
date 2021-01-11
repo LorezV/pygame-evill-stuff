@@ -16,7 +16,8 @@ class Game:
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
-        self.menu_picture = pygame.transform.scale(self.menu_picture, (WIDTH, HEIGHT))
+        self.menu_picture = pygame.transform.scale(self.menu_picture,
+                                                   (WIDTH, HEIGHT))
         pygame.mixer.music.load('data/music/sc_music.mp3')
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.1)
@@ -30,10 +31,11 @@ class GameManager:
     def __init__(self):
         pass
 
-    def init_gamemanager(self, game, labirint, menu):
+    def init_gamemanager(self, game, labirint, menu, lose):
         self.game = game
         self.menu = menu
         self.labirint = labirint
+        self.lose = lose
 
         _menu.init_sceene_settings()
         self.sceene = self.menu
@@ -136,16 +138,21 @@ class Lose(Sceene, ABC):
 
     def init_sceene_settings(self):
         pygame.mouse.set_visible(True)
+        pygame.mixer.quit()
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.load('data/music/lose_music.mp3')
+        pygame.mixer.music.play(-1)
 
     def game_loop(self):
         self.check_events()
         self.game.screen.fill(BLACK)
         restart, restartf = self.draw_buttons()
 
-        pygame.draw.rect(self.game.screen, BLACK, restart, border_radius=25,
+        pygame.draw.rect(self.game.screen, YELLOW, restart, border_radius=25,
                          width=10)
         self.game.screen.blit(restartf,
-                              (restart.centerx - 120, restart.centery - 40))
+                              (restart.centerx - 240, restart.centery - 40))
 
         label = self.game.font.render('GAME OVER', 1, RED)
         self.game.screen.blit(label, (
@@ -154,20 +161,20 @@ class Lose(Sceene, ABC):
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()
         if restart.collidepoint(mouse_pos):
-            pygame.draw.rect(self.game.screen, BLACK, restart,
+            pygame.draw.rect(self.game.screen, YELLOW, restart,
                              border_radius=25)
             self.game.screen.blit(restartf,
                                   (
-                                      restart.centerx - 175,
+                                      restart.centerx - 240,
                                       restart.centery - 40))
             if mouse_click[0]:
-               pass
+                self.game.terminate()
         pygame.display.flip()
 
     def draw_buttons(self):
-        restart = self.game.font.render('RESTART', 1,
+        restart = self.game.font.render('EXIT', 1,
                                         pygame.Color((0, 33, 92)))
-        button_restart = pygame.Rect(0, 0, 400, 150)
+        button_restart = pygame.Rect(0, 0, 600, 150)
         button_restart.center = HALF_WIDTH, HALF_HEIGHT + 200
         return button_restart, restart
 
@@ -228,4 +235,5 @@ _game = Game(gamemanager)
 _labirint_interface = LabirintInterface()
 _labirint = Labirint(_game, _labirint_interface)
 _menu = Menu(_game)
-gamemanager.init_gamemanager(_game, _labirint, _menu)
+_lose = Lose(_game)
+gamemanager.init_gamemanager(_game, _labirint, _menu, _lose)

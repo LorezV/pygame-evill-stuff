@@ -368,7 +368,11 @@ class Slender(SpriteObject):
             if self.count == 11:
                 self.attack_cooldown = 200
                 self.count = 0
-                player.set_health(player.health - randint(10, 20))
+                attack = randint(10, 20)
+                if player.health - attack <= 0:
+                    self.slender_sound.stop()
+                player.set_health(player.health - attack)
+
             return sprite_object
         return self.object
 

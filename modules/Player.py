@@ -83,8 +83,8 @@ class Player:
 
     def set_health(self, health):
         self.health = self.check_value(health)
-        if self.health == 0:
-            self.gamemanager.set_sceene(self.gamemanager.menu)
+        if self.health <= 0:
+            self.gamemanager.set_sceene(self.gamemanager.lose)
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)
