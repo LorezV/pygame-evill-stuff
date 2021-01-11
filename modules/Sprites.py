@@ -25,7 +25,7 @@ class Sprites:
                 'death_animation': [],
                 'is_dead': None,
                 'dead_shift': None,
-                'animation_dist': 100,
+                'animation_dist': 50,
                 'animation_speed': 2,
                 'blocked': True,
                 'is_trigger': False,
@@ -359,7 +359,6 @@ class Slender(SpriteObject):
         self.y += dy
 
     def sprite_animation(self, player):
-        self.attack_cooldown -= 1
         if self.animation and self.distance < self.animation_dist and self.attack_cooldown <= 0:
             sprite_object = self.animation[0]
             if self.animation_count < self.animation_speed:
@@ -397,44 +396,52 @@ class Slender(SpriteObject):
             self.slender_sound.set_volume(1 - delta / 1500)
         else:
             self.slender_sound.set_volume(0)
-        px, py = ceil(player.x // TILE), ceil(player.y // TILE)
-        sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
-        if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):
-            self.npc_action_trigger = True
-            self.move(player)
-            return
+        self.attack_cooldown -= 1
         self.npc_action_trigger = False
-        visited = bfs(px, py, sx, sy)
-        cur_node = (px, py)
-        last = cur_node
-        while cur_node != (sx, sy):
+        if self.attack_cooldown <= 0:
+            px, py = ceil(player.x // TILE), ceil(player.y // TILE)
+            sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
+            if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):
+                self.npc_action_trigger = True
+                self.move(player)
+                return
+            self.volume -= 0.001
+            self.slender_sound.set_volume(self.volume)
+            if self.volume <= 0:
+                self.slender_sound.stop()
+            self.slender_move = False
+            self.npc_action_trigger = False
+            visited = bfs(px, py, sx, sy)
+            cur_node = (px, py)
             last = cur_node
-            cur_node = visited[cur_node]
-        if last[0] > sx:
-            dx = 2
-        elif last[0] < sx:
-            dx = -2
-        else:
-            if self.x % TILE < self.side:
+            while cur_node != (sx, sy):
+                last = cur_node
+                cur_node = visited[cur_node]
+            if last[0] > sx:
                 dx = 2
-            elif self.x % TILE > TILE - self.side:
+            elif last[0] < sx:
                 dx = -2
             else:
-                dx = 0
-        if last[1] > sy:
-            dy = 2
-        elif last[1] < sy:
-            dy = -2
-        else:
-            if self.y % TILE < self.side:
+                if self.x % TILE < self.side:
+                    dx = 2
+                elif self.x % TILE > TILE - self.side:
+                    dx = -2
+                else:
+                    dx = 0
+            if last[1] > sy:
                 dy = 2
-            elif self.y % TILE > TILE - self.side:
+            elif last[1] < sy:
                 dy = -2
             else:
-                dy = 0
-        self.detect_collision(dx, dy)
-        self.rect.center = self.x, self.y
-        self.pos = (self.x, self.y)
+                if self.y % TILE < self.side:
+                    dy = 2
+                elif self.y % TILE > TILE - self.side:
+                    dy = -2
+                else:
+                    dy = 0
+            self.detect_collision(dx, dy)
+            self.rect.center = self.x, self.y
+            self.pos = (self.x, self.y)
 
     def update(self, player):
         self.action(player)
