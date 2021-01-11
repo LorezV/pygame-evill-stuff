@@ -3,11 +3,11 @@ from modules.Settings import *
 from modules.World import collision_objects
 
 class Player:
-    def __init__(self, sprites, gamemanager):
+    def __init__(self, sprites):
         super().__init__()
         self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
-        self.gamemanager = gamemanager
+
 
         self.sprites = sprites
 
@@ -83,7 +83,7 @@ class Player:
     def set_health(self, health):
         self.health = self.check_value(health)
         if self.health == 0:
-            self.gamemanager.set_sceene(self.gamemanager.menu)
+            pass
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)

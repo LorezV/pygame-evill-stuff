@@ -1,5 +1,4 @@
 import math
-import win32api
 
 # screen settings
 #SIZE = WIDTH, HEIGHT = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)

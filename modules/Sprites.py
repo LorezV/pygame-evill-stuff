@@ -4,7 +4,7 @@ from collections import deque
 from modules.Drawer import ray_casting_npc_player
 from modules.World import world_map, collision_objects, conj_dict, notes_spawn
 from math import ceil
-from random import sample
+from random import sample, randint
 
 
 class Sprites:
@@ -12,7 +12,7 @@ class Sprites:
         self.sprite_parametrs = {
             'sprite_slender': {
                 'sprite': [pygame.image.load(
-                    f'data/sprites/slender/idle/{i}.png').convert_alpha() for i
+                    f'data/sprites/slender/idle/1.png').convert_alpha() for i
                            in
                            range(1, 9)],
                 'viewing_angles': True,
@@ -26,7 +26,7 @@ class Sprites:
                 'is_dead': None,
                 'dead_shift': None,
                 'animation_dist': 50,
-                'animation_speed': 8,
+                'animation_speed': 2,
                 'blocked': True,
                 'is_trigger': False,
                 'flag': 'npc',
@@ -321,7 +321,11 @@ class Slender(SpriteObject):
             'data/sprites/slender/sounds/slender.mp3')
         self.slender_move = False
         self.volume = 1
-        self.last_timer_attack = pygame.time.get_ticks()
+        self.attack_cooldown = 200
+        self.count = 0
+        self.sprite_angles = [frozenset(range(i, i + 1)) for i in
+                              range(361)]
+        self.sprite_positions = {angle: self.object[0] for angle in self.sprite_angles}
 
     def detect_collision(self, dx, dy):
         collision_list = collision_objects
@@ -352,15 +356,19 @@ class Slender(SpriteObject):
         self.y += dy
 
     def sprite_animation(self, player):
-        if self.animation and self.distance < self.animation_dist and self.last_timer_attack < pygame.time.get_ticks() - 5000:
-            self.last_timer_attack = pygame.time.get_ticks()
+        self.attack_cooldown -= 1
+        if self.animation and self.distance < self.animation_dist and self.attack_cooldown <= 0:
             sprite_object = self.animation[0]
             if self.animation_count < self.animation_speed:
                 self.animation_count += 1
-                player.set_health(player.health - 10)
             else:
                 self.animation.rotate()
                 self.animation_count = 0
+                self.count += 1
+            if self.count == 11:
+                self.attack_cooldown = 200
+                self.count = 0
+                player.set_health(player.health - randint(10, 20))
             return sprite_object
         return self.object
 
