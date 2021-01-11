@@ -17,7 +17,8 @@ class Game:
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
-        self.menu_picture = pygame.transform.scale(self.menu_picture, (WIDTH, HEIGHT))
+        self.menu_picture = pygame.transform.scale(self.menu_picture,
+                                                   (WIDTH, HEIGHT))
         pygame.mixer.music.load('data/music/sc_music.mp3')
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.1)
@@ -31,11 +32,12 @@ class GameManager:
     def __init__(self):
         pass
 
-    def init_gamemanager(self, game, labirint, menu, level_two):
+    def init_gamemanager(self, game, labirint, menu, lose, level_two):
         self.game = game
         self.menu = menu
         self.labirint = labirint
         self.level_two = level_two
+        self.lose = lose
 
         _menu.init_sceene_settings()
         self.sceene = self.menu
@@ -95,7 +97,8 @@ class Menu(Sceene, ABC):
         self.game.screen.blit(exitf, (exit.centerx - 120, exit.centery - 40))
 
         label = self.game.font.render('Evill Stuff', 1, (0, 33, 92))
-        self.game.screen.blit(label, (WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
+        self.game.screen.blit(label, (
+            WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()
@@ -125,6 +128,57 @@ class Menu(Sceene, ABC):
         button_exit = pygame.Rect(0, 0, 400, 150)
         button_exit.center = HALF_WIDTH, HALF_HEIGHT + 200
         return button_start, button_exit, start, exit
+
+    def check_events(self):
+        super().check_events()
+
+
+class Lose(Sceene, ABC):
+    def __init__(self, game):
+        super().__init__(game)
+        self.lose_sprites_group = pygame.sprite.Group()
+
+    def init_sceene_settings(self):
+        pygame.mouse.set_visible(True)
+        pygame.mixer.quit()
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.load('data/music/lose_music.mp3')
+        pygame.mixer.music.play(-1)
+
+    def game_loop(self):
+        self.check_events()
+        self.game.screen.fill(BLACK)
+        restart, restartf = self.draw_buttons()
+
+        pygame.draw.rect(self.game.screen, YELLOW, restart, border_radius=25,
+                         width=10)
+        self.game.screen.blit(restartf,
+                              (restart.centerx - 240, restart.centery - 40))
+
+        label = self.game.font.render('GAME OVER', 1, RED)
+        self.game.screen.blit(label, (
+            WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
+
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()
+        if restart.collidepoint(mouse_pos):
+            pygame.draw.rect(self.game.screen, YELLOW, restart,
+                             border_radius=25)
+            self.game.screen.blit(restartf,
+                                  (
+                                      restart.centerx - 240,
+                                      restart.centery - 40))
+            if mouse_click[0]:
+                self.game.terminate()
+        pygame.display.flip()
+
+    def draw_buttons(self):
+        restart = self.game.font.render('EXIT', 1,
+                                        pygame.Color((0, 33, 92)))
+        button_restart = pygame.Rect(0, 0, 600, 150)
+        button_restart.center = HALF_WIDTH, HALF_HEIGHT + 200
+        return button_restart, restart
 
     def check_events(self):
         super().check_events()
@@ -184,10 +238,12 @@ class Labirint(Sceene, ABC):
 class LabirintInterface():
     def __init__(self):
         self.note_group = pygame.sprite.Group()
-        self.notes = [note for note in _game.sprites.objects_list if note.flag == "note"]
+        self.notes = [note for note in _game.sprites.objects_list if
+                      note.flag == "note"]
 
         for i in range(len(_game.sprites.objects_list)):
-            sprite = _game.sprites.objects_list[len(_game.sprites.objects_list) - i - 1]
+            sprite = _game.sprites.objects_list[
+                len(_game.sprites.objects_list) - i - 1]
             if sprite.flag == 'note':
                 sprite.noteIcon.move((WIDTH - 70) - i * 50, 10)
 
@@ -202,4 +258,5 @@ _labirint_interface = LabirintInterface()
 _labirint = Labirint(_game, _labirint_interface)
 _level_two = LevelTwo(_game)
 _menu = Menu(_game)
-gamemanager.init_gamemanager(_game, _labirint, _menu, _level_two)
+_lose = Lose(_game)
+gamemanager.init_gamemanager(_game, _labirint, _menu, _lose, _level_two)
