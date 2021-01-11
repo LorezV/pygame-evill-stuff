@@ -6,18 +6,17 @@ from modules.Drawer import Drawer, ray_casting_walls
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, gamemanager):
         pygame.init()
         self.screen = pygame.display.set_mode(SIZE)
         self.screen_minimap = pygame.Surface(MAP_RESOLUTION)
         self.sprites = Sprites()
-        self.player = Player(self.sprites)
+        self.player = Player(self.sprites, gamemanager)
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
-        self.menu_picture = pygame.transform.scale(self.menu_picture,
-                                                   (WIDTH, HEIGHT))
+        self.menu_picture = pygame.transform.scale(self.menu_picture, (WIDTH, HEIGHT))
         pygame.mixer.music.load('data/music/sc_music.mp3')
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.1)
@@ -28,15 +27,13 @@ class Game:
 
 
 class GameManager:
-    def __init__(self, game, labirint, menu):
+    def __init__(self):
+        pass
+
+    def init_gamemanager(self, game, labirint, menu):
         self.game = game
         self.menu = menu
         self.labirint = labirint
-
-        self.sceenes = {
-            "labirint": self.labirint,
-            "menu": self.menu,
-        }
 
         _menu.init_sceene_settings()
         self.sceene = self.menu
@@ -226,9 +223,9 @@ class LabirintInterface():
         noteicons_group.update()
 
 
-_game = Game()
+gamemanager = GameManager()
+_game = Game(gamemanager)
 _labirint_interface = LabirintInterface()
 _labirint = Labirint(_game, _labirint_interface)
 _menu = Menu(_game)
-
-gamemanager = GameManager(_game, _labirint, _menu)
+gamemanager.init_gamemanager(_game, _labirint, _menu)

@@ -3,13 +3,14 @@ from modules.Settings import *
 from modules.World import collision_objects
 
 class Player:
-    def __init__(self, sprites):
+    def __init__(self, sprites, gamemanager):
         super().__init__()
         self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
 
 
         self.sprites = sprites
+        self.gamemanager = gamemanager
 
         # Перенести в settings
         self.player_speed = PLAYER_SPEED
@@ -83,7 +84,7 @@ class Player:
     def set_health(self, health):
         self.health = self.check_value(health)
         if self.health == 0:
-            pass
+            self.gamemanager.set_sceene(self.gamemanager.menu)
 
     def set_stamina(self, stamina):
         self.stamina = self.check_value(stamina)
