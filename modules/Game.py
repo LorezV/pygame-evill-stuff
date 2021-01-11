@@ -12,9 +12,9 @@ class Game:
         self.screen = pygame.display.set_mode(SIZE)
         self.screen_minimap = pygame.Surface(MAP_RESOLUTION)
         self.sprites = Sprites()
-        self.player = Player(self.sprites, self.gamemanager)
-        self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
+        self.player = Player(self.sprites, self.gamemanager, self.drawer)
+        self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
         self.menu_picture = pygame.transform.scale(self.menu_picture,
@@ -38,6 +38,8 @@ class GameManager:
         self.labirint = labirint
         self.level_two = level_two
         self.lose = lose
+
+        self.portal_open = False
 
         _menu.init_sceene_settings()
         self.sceene = self.menu
@@ -190,12 +192,21 @@ class LevelTwo(Sceene, ABC):
 
     def init_sceene_settings(self):
         pygame.mouse.set_visible(True)
+        pygame.mixer.quit()
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.load('data/music/lose_music.mp3')
+        pygame.mixer.music.play(-1)
 
     def game_loop(self):
         self.check_events()
         self.game.screen.fill(BLACK)
-        text_render = self.game.font.render("To be continue...", 1, WHITE)
-        self.game.screen.blit(text_render, (WIDTH // 2 - text_render.get_width(), HEIGHT // 2 - text_render.get_height()))
+        background_image = pygame.image.load("data/textures/sky.png")
+        background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+        self.game.screen.blit(background_image, (0, 0))
+        text_render = self.game.font.render("To be continue", 1, WHITE)
+        self.game.screen.blit(text_render, (100, HEIGHT - 100 - text_render.get_height()))
+        pygame.display.flip()
 
     def check_events(self):
         super().check_events()
@@ -230,9 +241,6 @@ class Labirint(Sceene, ABC):
 
     def check_events(self):
         super().check_events()
-        key = pygame.key.get_pressed()
-        if key[pygame.K_SPACE]:
-            self.game.gamemanager.set_sceene(self.game.gamemanager.level_two)
 
 
 class LabirintInterface():

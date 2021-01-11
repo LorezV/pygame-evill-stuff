@@ -3,7 +3,7 @@ from modules.Settings import *
 from modules.World import collision_objects
 
 class Player:
-    def __init__(self, sprites, gamemanager):
+    def __init__(self, sprites, gamemanager, drawer):
         super().__init__()
         self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
@@ -11,6 +11,7 @@ class Player:
 
         self.sprites = sprites
         self.gamemanager = gamemanager
+        self.drawer = drawer
 
         # Перенести в settings
         self.player_speed = PLAYER_SPEED
@@ -72,6 +73,14 @@ class Player:
                 self.notes[self.notes.index(sprite)].noteIcon.set_founded()
                 del self.sprites.objects_list[self.sprites.objects_list.index(sprite)]
 
+                all_notes_founded = True
+                for note in self.notes:
+                    all_notes_founded *= note.noteIcon.founded
+
+                if all_notes_founded:
+                    self.drawer.textures[3] = self.drawer.door_images[1]
+                    self.gamemanager.portal_open = True
+
     def check_value(self, value):
         value = int(value)
         if value > 100:
@@ -98,6 +107,10 @@ class Player:
         self.keys_control()
         self.rect.center = self.x, self.y
         self.angle %= DOUBLE_PI
+
+        if  70 < self.x < 170 and 290 < self.y < 390 and self.gamemanager.portal_open:
+            self.gamemanager.set_sceene(self.gamemanager.level_two)
+
 
     def keys_control(self):
         sin_a = math.sin(self.angle)
@@ -126,7 +139,7 @@ class Player:
             self.angle += 0.02
 
         if keys[pygame.K_SPACE]:
-            self.set_health(25)
+            print(self.pos)
 
         if keys[pygame.K_LSHIFT] and self.can_run:
             self.player_speed = PLAYER_SPEED + 1

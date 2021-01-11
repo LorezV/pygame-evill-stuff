@@ -11,10 +11,16 @@ class Drawer:
         self.font = pygame.font.SysFont('arial', 26, bold=True)
         sky_image = pygame.image.load('data/textures/sky.png').convert()
         sky_image = pygame.transform.scale(sky_image, (WIDTH, HALF_HEIGHT))
+
+        self.door_images = [
+            pygame.image.load('data/textures/door.png').convert_alpha(),
+            pygame.image.load('data/textures/portal.png').convert_alpha()
+        ]
+
         self.textures = {
             2: pygame.image.load('data/textures/wall.png').convert(),
             1: pygame.image.load('data/textures/fence.png').convert_alpha(),
-            3: pygame.image.load('data/textures/portal.png').convert_alpha(),
+            3: self.door_images[0],
             'sky': sky_image}
 
     def fps(self, clock):

@@ -2,7 +2,7 @@ import math
 
 # screen settings
 #SIZE = WIDTH, HEIGHT = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
-SIZE = WIDTH, HEIGHT = 1200, 800
+SIZE = WIDTH, HEIGHT = 1920, 1080
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
 PENTA_HEIGHT = 5 * HEIGHT

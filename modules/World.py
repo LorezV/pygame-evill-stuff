@@ -30,7 +30,7 @@ conj_dict = {}
 world_map = Dict.empty(key_type=types.UniTuple(int32, 2), value_type=int32)
 mini_map = set()
 collision_objects = []
-notes_spawn = []
+notes_spawn = [(2, 2), (2, 2.2), (2, 2.4), (2, 2.6), (2, 2.8), (2, 3), (2, 3.2), (2, 3.4)]
 for j, row in enumerate(matrix_map):
     for i, char in enumerate(row):
         if char:
@@ -42,4 +42,5 @@ for j, row in enumerate(matrix_map):
             conj_dict[(i, j)] = find_new_nodes(i, j)
             if i != len(matrix_map[0]) - 1:
                 if matrix_map[j][i + 1] == 2:
-                    notes_spawn.append((i, j))
+                    #notes_spawn.append((i, j))
+                     pass

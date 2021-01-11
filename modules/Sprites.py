@@ -18,7 +18,7 @@ class Sprites:
                 'viewing_angles': True,
                 'shift': 0,
                 'scale': (1, 1),
-                'side': 30,
+                'side': 50,
                 'animation': deque(pygame.image.load(
                     f'data/sprites/slender/animation_attack/{i}.png').convert_alpha()
                                    for i in range(11)),
@@ -281,6 +281,7 @@ noteicons_group = pygame.sprite.Group()
 class NoteIcon(pygame.sprite.Sprite):
     def __init__(self, image, image_unfound):
         super().__init__()
+        self.founded = False
         self.icon = image
         self.icon_unfound = image_unfound
 
@@ -292,6 +293,7 @@ class NoteIcon(pygame.sprite.Sprite):
         pass
 
     def set_founded(self):
+        self.founded = True
         self.image = self.icon
 
     def move(self, x, y):
