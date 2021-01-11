@@ -8,10 +8,11 @@ from modules.Drawer import Drawer, ray_casting_walls
 class Game:
     def __init__(self, gamemanager):
         pygame.init()
+        self.gamemanager = gamemanager
         self.screen = pygame.display.set_mode(SIZE)
         self.screen_minimap = pygame.Surface(MAP_RESOLUTION)
         self.sprites = Sprites()
-        self.player = Player(self.sprites, gamemanager)
+        self.player = Player(self.sprites, self.gamemanager)
         self.clock = pygame.time.Clock()
         self.drawer = Drawer(self.screen, self.screen_minimap)
         self.font = pygame.font.Font('data/fonts/pixels.otf', 72)
@@ -30,10 +31,11 @@ class GameManager:
     def __init__(self):
         pass
 
-    def init_gamemanager(self, game, labirint, menu):
+    def init_gamemanager(self, game, labirint, menu, level_two):
         self.game = game
         self.menu = menu
         self.labirint = labirint
+        self.level_two = level_two
 
         _menu.init_sceene_settings()
         self.sceene = self.menu
@@ -128,6 +130,23 @@ class Menu(Sceene, ABC):
         super().check_events()
 
 
+class LevelTwo(Sceene, ABC):
+    def __init__(self, game):
+        super().__init__(game)
+
+    def init_sceene_settings(self):
+        pygame.mouse.set_visible(True)
+
+    def game_loop(self):
+        self.check_events()
+        self.game.screen.fill(BLACK)
+        text_render = self.game.font.render("To be continue...", 1, WHITE)
+        self.game.screen.blit(text_render, (WIDTH // 2 - text_render.get_width(), HEIGHT // 2 - text_render.get_height()))
+
+    def check_events(self):
+        super().check_events()
+
+
 class Labirint(Sceene, ABC):
     def __init__(self, game, labirint_interface):
         super().__init__(game)
@@ -157,6 +176,9 @@ class Labirint(Sceene, ABC):
 
     def check_events(self):
         super().check_events()
+        key = pygame.key.get_pressed()
+        if key[pygame.K_SPACE]:
+            self.game.gamemanager.set_sceene(self.game.gamemanager.level_two)
 
 
 class LabirintInterface():
@@ -178,5 +200,6 @@ gamemanager = GameManager()
 _game = Game(gamemanager)
 _labirint_interface = LabirintInterface()
 _labirint = Labirint(_game, _labirint_interface)
+_level_two = LevelTwo(_game)
 _menu = Menu(_game)
-gamemanager.init_gamemanager(_game, _labirint, _menu)
+gamemanager.init_gamemanager(_game, _labirint, _menu, _level_two)

@@ -126,7 +126,7 @@ class Player:
             self.angle += 0.02
 
         if keys[pygame.K_SPACE]:
-            self.set_health(0)
+            self.set_health(25)
 
         if keys[pygame.K_LSHIFT] and self.can_run:
             self.player_speed = PLAYER_SPEED + 1

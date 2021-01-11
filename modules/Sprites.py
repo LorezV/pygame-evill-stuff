@@ -372,7 +372,6 @@ class Slender(SpriteObject):
             return sprite_object
         return self.object
 
-
     def move(self, player):
         if self.distance > self.animation_dist or (
                 (self.x - player.pos[0]) ** 2 + (
