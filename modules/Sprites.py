@@ -391,13 +391,13 @@ class Slender(SpriteObject):
             self.pos = (self.x, self.y)
 
     def action(self, player):
+        self.attack_cooldown -= 1
+        self.npc_action_trigger = False
         delta = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
-        if delta < 1500:
+        if delta < 1500 and self.attack_cooldown <= 0:
             self.slender_sound.set_volume(1 - delta / 1500)
         else:
             self.slender_sound.set_volume(0)
-        self.attack_cooldown -= 1
-        self.npc_action_trigger = False
         if self.attack_cooldown <= 0:
             px, py = ceil(player.x // TILE), ceil(player.y // TILE)
             sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
@@ -405,11 +405,6 @@ class Slender(SpriteObject):
                 self.npc_action_trigger = True
                 self.move(player)
                 return
-            self.volume -= 0.001
-            self.slender_sound.set_volume(self.volume)
-            if self.volume <= 0:
-                self.slender_sound.stop()
-            self.slender_move = False
             self.npc_action_trigger = False
             visited = bfs(px, py, sx, sy)
             cur_node = (px, py)
