@@ -57,7 +57,7 @@ class Sprites:
         }
         coords = sample(notes_spawn, 8)
         self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (6.5, 30.5)),
+            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5)),
             Note(self.sprite_parametrs['sprite_note'],
                  (coords[0][0] + 0.98, coords[0][1] + 0.5),
                  [pygame.image.load(
@@ -322,6 +322,7 @@ class Slender(SpriteObject):
         self.slender_sound = pygame.mixer.Sound(
             'data/sprites/slender/sounds/moving.mp3')
         self.slender_sound.play(-1)
+        self.attack_sound = pygame.mixer.Sound('data/sprites/slender/sounds/attack.mp3')
         self.slender_sound.set_volume(0)
         self.attack_cooldown = 200
         self.count = 0
@@ -329,6 +330,8 @@ class Slender(SpriteObject):
                               range(361)]
         self.sprite_positions = {angle: self.object[0] for angle in
                                  self.sprite_angles}
+        self.active_time = 0
+        self.sleep = 5 * FPS
 
     def detect_collision(self, dx, dy):
         collision_list = collision_objects
@@ -367,7 +370,9 @@ class Slender(SpriteObject):
                 self.animation.rotate()
                 self.animation_count = 0
                 self.count += 1
-            if self.count == 11:
+            if self.count == 5:
+                self.attack_sound.play()
+            elif self.count == 11:
                 self.attack_cooldown = 200
                 self.count = 0
                 attack = randint(10, 20)
@@ -394,11 +399,18 @@ class Slender(SpriteObject):
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
         delta = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
-        if delta < 1500 and self.attack_cooldown <= 0:
-            self.slender_sound.set_volume(1 - delta / 1500)
+        if delta < 1000 and self.attack_cooldown <= 0:
+            self.slender_sound.set_volume(1 - delta / 1000)
+            self.active_time += 1
         else:
             self.slender_sound.set_volume(0)
-        if self.attack_cooldown <= 0:
+            self.active_time = 0
+        if self.active_time > 10000:
+            self.sleep -= 1
+        if self.sleep < 0:
+            self.sleep = 500
+            self.active_time = 0
+        if self.attack_cooldown <= 0 and self.active_time < 3000:
             px, py = ceil(player.x // TILE), ceil(player.y // TILE)
             sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
             if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):

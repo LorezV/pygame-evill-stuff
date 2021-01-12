@@ -163,7 +163,8 @@ class Lose(Sceene, ABC):
                              border_radius=25)
             self.game.screen.blit(restartf,
                                   (
-                                      restart.centerx - 120, restart.centery + 120))
+                                      restart.centerx - 120,
+                                      restart.centery - 40))
             if mouse_click[0]:
                 self.game.player.restart()
         pygame.display.flip()
@@ -249,6 +250,7 @@ class Labirint(Sceene, ABC):
                     self.pause = not self.pause
             elif event.type == pygame.QUIT:
                 self.game.terminate()
+
 
 
 class LabirintInterface():
