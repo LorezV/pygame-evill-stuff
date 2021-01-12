@@ -55,6 +55,8 @@ class GameManager:
 class Sceene:
     def __init__(self, game):
         self.game = game
+        self.pause = not self.pause
+
 
     @abstractmethod
     def init_sceene_settings(self):
@@ -68,12 +70,9 @@ class Sceene:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.game.terminate()
-
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
-            self.game.terminate()
         if keys[pygame.K_0]:
-            gamemanager.set_sceene(gamemanager.labirint)
+            self.pause = not self.pause
 
 
 class Menu(Sceene, ABC):
@@ -169,7 +168,8 @@ class Lose(Sceene, ABC):
                              border_radius=25)
             self.game.screen.blit(restartf,
                                   (
-                                  restart.centerx - 120, restart.centery - 40))
+                                      restart.centerx - 120,
+                                      restart.centery - 40))
             if mouse_click[0]:
                 self.game.terminate()
         pygame.display.flip()
@@ -217,33 +217,42 @@ class Labirint(Sceene, ABC):
     def __init__(self, game, labirint_interface):
         super().__init__(game)
         self.labirint_interface = labirint_interface
-
+        self.pause = False
 
     def init_sceene_settings(self):
         pygame.mouse.set_visible(False)
         pygame.mixer.music.load('data/music/gameplay_music.mp3')
         pygame.mixer.music.play(-1)
+
     def game_loop(self):
         self.check_events()
-        self.game.player.movement()
-        self.game.sprites.objects_list[0].action(self.game.player)
+        if not self.pause:
+            print(1)
+            self.game.player.movement()
+            self.game.sprites.objects_list[0].action(self.game.player)
 
-        self.game.screen.fill(BLACK)
-        self.game.drawer.background(self.game.player.ang)
-        self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures) + [
-                obj.object_locate(self.game.player) for obj in
-                self.game.sprites.objects_list])
-        self.game.drawer.mini_map(self.game.player, _game.sprites)
-        self.game.drawer.interface(self.game.player)
-        self.labirint_interface.render()
-        self.game.drawer.fps(self.game.clock)
+            self.game.screen.fill(BLACK)
+            self.game.drawer.background(self.game.player.ang)
+            self.game.drawer.world(
+                ray_casting_walls(self.game.player, self.game.drawer.textures) + [
+                    obj.object_locate(self.game.player) for obj in
+                    self.game.sprites.objects_list])
+            self.game.drawer.mini_map(self.game.player, _game.sprites)
+            self.game.drawer.interface(self.game.player)
+            self.labirint_interface.render()
+            # self.game.drawer.fps(self.game.clock)
 
-        pygame.display.flip()
-        self.game.clock.tick(FPS)
+            pygame.display.flip()
+            self.game.clock.tick(FPS)
+        else:
+            print(0)
+            label = self.game.font.render('PAUSE', 1, RED)
+            self.game.screen.blit(label, (
+                WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
 
     def check_events(self):
         super().check_events()
+
 
 
 class LabirintInterface():
