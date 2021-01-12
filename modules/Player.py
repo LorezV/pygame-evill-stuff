@@ -1,12 +1,13 @@
 import pygame
 from modules.Settings import *
 from modules.World import collision_objects
+from modules.Sprites import Sprites
 
 
 class Player:
     def __init__(self, sprites, gamemanager, drawer):
         super().__init__()
-        self.x, self.y = 150, 150
+        self.spawn_pos = self.x, self.y = 150, 150
         self.sensitivity = SENSITIVITY
 
         self.sprites = sprites
@@ -35,6 +36,17 @@ class Player:
     @property
     def ang(self):
         return self.angle
+
+    def restart(self):
+        self.x = self.spawn_pos[0]
+        self.y = self.spawn_pos[1]
+        self.set_health(100)
+        self.set_stamina(100)
+        self.gamemanager.game.sprites = Sprites()
+        self.sprites = self.gamemanager.game.sprites
+        self.notes = [x for x in self.sprites.objects_list if x.flag == "note"]
+        self.gamemanager.portal_open = False
+        self.gamemanager.set_sceene(self.gamemanager.labirint)
 
     def detect_collision(self, dx, dy):
         collision_sprites = [(pygame.Rect(*obj.pos, obj.side, obj.side), obj)
