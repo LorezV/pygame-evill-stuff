@@ -45,6 +45,7 @@ class Player:
         self.gamemanager.game.sprites = Sprites()
         self.sprites = self.gamemanager.game.sprites
         self.notes = [x for x in self.sprites.objects_list if x.flag == "note"]
+        self.gamemanager.labirint.labirint_interface.update_notes_list()
         self.gamemanager.portal_open = False
         self.gamemanager.set_sceene(self.gamemanager.labirint)
 

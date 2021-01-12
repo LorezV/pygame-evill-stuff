@@ -3,6 +3,7 @@ from abc import abstractmethod, ABC
 from modules.Player import Player
 from modules.Sprites import *
 from modules.Drawer import Drawer, ray_casting_walls
+from modules.Interface import *
 
 
 class Game:
@@ -248,31 +249,15 @@ class Labirint(Sceene, ABC):
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     self.pause = not self.pause
+                elif event.key == pygame.K_SPACE:
+                    self.game.player.set_health(0)
             elif event.type == pygame.QUIT:
                 self.game.terminate()
 
 
-
-class LabirintInterface():
-    def __init__(self):
-        self.note_group = pygame.sprite.Group()
-        self.notes = [note for note in _game.sprites.objects_list if
-                      note.flag == "note"]
-
-        for i in range(len(_game.sprites.objects_list)):
-            sprite = _game.sprites.objects_list[
-                len(_game.sprites.objects_list) - i - 1]
-            if sprite.flag == 'note':
-                sprite.noteIcon.move((WIDTH - 70) - i * 50, 10)
-
-    def render(self):
-        noteicons_group.draw(_game.screen)
-        noteicons_group.update()
-
-
 gamemanager = GameManager()
 _game = Game(gamemanager)
-_labirint_interface = LabirintInterface()
+_labirint_interface = LabirintInterface(_game)
 _labirint = Labirint(_game, _labirint_interface)
 _level_two = LevelTwo(_game)
 _menu = Menu(_game)
