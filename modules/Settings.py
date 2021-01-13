@@ -1,7 +1,9 @@
 import math
+import pygame
 
 # screen settings
-#SIZE = WIDTH, HEIGHT = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
+# SIZE = WIDTH, HEIGHT = win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
+
 SIZE = WIDTH, HEIGHT = 1920, 1080
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
@@ -26,7 +28,6 @@ MAP_SCALE = 5 * MINIMAP_SCALE
 MAP_TILE = TILE // MAP_SCALE
 MAP_POS = (0, HEIGHT - HEIGHT // MINIMAP_SCALE)
 
-
 FPS_POS = (WIDTH - 50, 10)
 
 # ray casting settings
@@ -40,7 +41,9 @@ PROJ_COEFF = 3 * DIST * TILE
 SCALE = math.ceil(WIDTH / NUM_RAYS)
 
 # player
+PLAYER_SPAWN_POS = (150, 150)
 PLAYER_SPEED = 2
+PLAYER_SPEED_FAST = 3
 PLAYER_ANGLE = 0
 SENSITIVITY = 0.002
 DOUBLE_PI = math.pi * 2
@@ -69,3 +72,11 @@ MENU_BUTTON_START_COLOR = (255, 10, 10)
 MENU_BUTTON_EXIT_COLOR = (0, 33, 92)
 
 PORTAL_COORDS = (3255, 120)
+
+# Custom events
+ON_PLAYER_ENTER_COLLISION = pygame.event.custom_type()
+ON_PLAYER_SPAWN = pygame.event.custom_type()
+
+ON_MENU_BUTTON_START = pygame.event.Event(pygame.event.custom_type(), message="User did pressed START button in menu")
+ON_MENU_BUTTON_EXIT = pygame.event.Event(pygame.event.custom_type(), message="User did pressed EXIT button in menu")
+ON_MENU_BUTTON_RESTART = pygame.event.Event(pygame.event.custom_type(), message="User required restart")

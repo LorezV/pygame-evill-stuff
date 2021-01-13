@@ -167,6 +167,7 @@ class SpriteObject():
         self.obj_action = parameters['obj_action'].copy()
         self.death_animation_count = 0
         self.npc_action_trigger = False
+        self.hidden = False
 
         self.blocked = parameters['blocked']
         self.is_trigger = parameters['is_trigger']
@@ -190,45 +191,48 @@ class SpriteObject():
         return self.y
 
     def object_locate(self, player):
-        dx, dy = self.x - player.x, self.y - player.y
-        self.distance = math.sqrt(dx ** 2 + dy ** 2)
+        if not self.hidden:
+            dx, dy = self.x - player.x, self.y - player.y
+            self.distance = math.sqrt(dx ** 2 + dy ** 2)
 
-        self.theta = math.atan2(dy, dx)
-        gamma = self.theta - player.ang
-        if dx > 0 and 180 <= math.degrees(player.ang) <= 360 or \
-                dx < 0 and dy < 0:
-            gamma += DOUBLE_PI
-        self.theta -= 1.4 * gamma
+            self.theta = math.atan2(dy, dx)
+            gamma = self.theta - player.ang
+            if dx > 0 and 180 <= math.degrees(player.ang) <= 360 or \
+                    dx < 0 and dy < 0:
+                gamma += DOUBLE_PI
+            self.theta -= 1.4 * gamma
 
-        delta_rays = int(gamma / DELTA_ANGLE)
-        self.current_ray = CENTER_RAY + delta_rays
-        self.distance *= math.cos(HALF_FOV - self.current_ray * DELTA_ANGLE)
+            delta_rays = int(gamma / DELTA_ANGLE)
+            self.current_ray = CENTER_RAY + delta_rays
+            self.distance *= math.cos(HALF_FOV - self.current_ray * DELTA_ANGLE)
 
-        fake_ray = self.current_ray + FAKE_RAYS
-        if 0 <= fake_ray <= FAKE_RAYS_RANGE and self.distance > 30:
-            self.proj_height = min(int(PROJ_COEFF / self.distance),
-                                   DOUBLE_HEIGHT)
-            sprite_width = int(self.proj_height * self.scale[0])
-            sprite_height = int(self.proj_height * self.scale[1])
-            half_sprite_width = sprite_width // 2
-            half_sprite_height = sprite_height // 2
-            shift = half_sprite_height * self.shift
+            fake_ray = self.current_ray + FAKE_RAYS
+            if 0 <= fake_ray <= FAKE_RAYS_RANGE and self.distance > 30:
+                self.proj_height = min(int(PROJ_COEFF / self.distance),
+                                       DOUBLE_HEIGHT)
+                sprite_width = int(self.proj_height * self.scale[0])
+                sprite_height = int(self.proj_height * self.scale[1])
+                half_sprite_width = sprite_width // 2
+                half_sprite_height = sprite_height // 2
+                shift = half_sprite_height * self.shift
 
-            if self.is_dead and self.is_dead != 'immortal':
-                sprite_object = self.dead_animation()
-                shift = half_sprite_height * self.dead_shift
-                sprite_height = int(sprite_height / 1.3)
-            elif self.npc_action_trigger and self.distance >= self.animation_dist:
-                sprite_object = self.npc_in_action()
+                if self.is_dead and self.is_dead != 'immortal':
+                    sprite_object = self.dead_animation()
+                    shift = half_sprite_height * self.dead_shift
+                    sprite_height = int(sprite_height / 1.3)
+                elif self.npc_action_trigger and self.distance >= self.animation_dist:
+                    sprite_object = self.npc_in_action()
+                else:
+                    self.object = self.visible_sprite()
+                    sprite_object = self.sprite_animation(player)
+
+                sprite_pos = (self.current_ray * SCALE - half_sprite_width,
+                              HALF_HEIGHT - half_sprite_height + shift)
+                sprite = pygame.transform.scale(
+                    sprite_object, (sprite_width, sprite_height))
+                return self.distance, sprite, sprite_pos
             else:
-                self.object = self.visible_sprite()
-                sprite_object = self.sprite_animation(player)
-
-            sprite_pos = (self.current_ray * SCALE - half_sprite_width,
-                          HALF_HEIGHT - half_sprite_height + shift)
-            sprite = pygame.transform.scale(
-                sprite_object, (sprite_width, sprite_height))
-            return self.distance, sprite, sprite_pos
+                return False,
         else:
             return False,
 
