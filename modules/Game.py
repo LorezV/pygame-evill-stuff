@@ -57,7 +57,8 @@ class Game:
         self.sprites = Sprites()
         for sprite in self.sprites.objects_list:
             sprite.hidden = False
-        self.player.notes = [x for x in self.sprites.objects_list if x.flag == "note"]
+        self.player.notes = [x for x in self.sprites.objects_list if
+                             x.flag == "note"]
         self.labirint_interface.update_notes_list()
         self.portal_open = False
         self.set_level(self.labirint_level)

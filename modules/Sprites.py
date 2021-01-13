@@ -25,7 +25,7 @@ class Sprites:
                 'death_animation': [],
                 'is_dead': None,
                 'dead_shift': None,
-                'animation_dist': 50,
+                'animation_dist': 100,
                 'animation_speed': 2,
                 'blocked': True,
                 'is_trigger': False,
@@ -379,7 +379,7 @@ class Slender(SpriteObject):
             elif self.count == 11:
                 self.attack_cooldown = 200
                 self.count = 0
-                attack = randint(10, 20)
+                attack = randint(20, 40)
                 if player.health - attack <= 0:
                     self.slender_sound.stop()
                 player.set_health(player.health - attack)

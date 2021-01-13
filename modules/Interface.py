@@ -14,7 +14,7 @@ class GamePauseInterface:
         self.initUi()
 
     def initUi(self):
-        self.restart_button.size = (300, 80)
+        self.restart_button.size = (560, 80)
         self.restart_button.move_bc(HALF_WIDTH, HALF_HEIGHT)
         self.restart_button.color = RED
         self.exit_button.size = (300, 80)
