@@ -82,7 +82,7 @@ class Drawer:
             STAMINA_POS_X + PADDING, STAMINA_POS_Y + PADDING,
             STAMINA_WIDTH * player.stamina // 100 - PADDING * 2,
             STAMINA_HEIGHT - PADDING * 2))
-        stamina_text = self.game.font_mini.render(str(player.stamina), 1, WHITE)
+        stamina_text = self.game.font_mini.render(str(int(player.stamina)), 1, WHITE)
         self.game.screen.blit(stamina_text,
                               (STAMINA_TEXT_POS_X - stamina_text.get_width() // 2,
                                STAMINA_TEXT_POS_Y - stamina_text.get_height() // 2))

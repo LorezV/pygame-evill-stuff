@@ -97,10 +97,15 @@ class Player:
             self.game.set_level(self.game.loose)
 
     def set_stamina(self, stamina):
-        self.stamina = check_value(stamina)
-        if self.stamina == 0:
+        if stamina > 100:
+            stamina = 100
+        elif stamina < 0:
+            stamina = 0
+
+        self.stamina = stamina
+        if self.stamina <= 0:
             self.can_run = False
-        elif self.stamina > 50:
+        elif self.stamina > 60:
             self.can_run = True
 
     def movement(self):
@@ -140,11 +145,11 @@ class Player:
             self.angle += 0.02
 
         if keys[pygame.K_LSHIFT] and self.can_run:
-            self.player_speed = PLAYER_SPEED
-            self.set_stamina(self.stamina - 2)
-        else:
             self.player_speed = PLAYER_SPEED_FAST
-            self.set_stamina(self.stamina + 1)
+            self.set_stamina(self.stamina - 1)
+        else:
+            self.player_speed = PLAYER_SPEED
+            self.set_stamina(self.stamina + 0.5)
 
     def mouse_control(self):
         if pygame.mouse.get_focused():
