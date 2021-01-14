@@ -1,13 +1,13 @@
 from modules.Settings import *
 from collections import deque
 from modules.Drawer import ray_casting_npc_player
-from modules.World import world_map, collision_objects, conj_dict, notes_spawn
 from math import ceil
 from random import sample, randint
 
 
 class Sprites:
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.sprite_parametrs = {
             'sprite_slender': {
                 'sprite': [pygame.image.load(
@@ -54,9 +54,9 @@ class Sprites:
                 'obj_action': deque()
             }
         }
-        coords = sample(notes_spawn, 8)
+        coords = sample(self.game.world.notes_spawn, 8)
         self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5)),
+            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5), self.game),
             Note(self.sprite_parametrs['sprite_note'],
                  (coords[0][0] + 0.98, coords[0][1] + 0.5),
                  [pygame.image.load(
@@ -225,6 +225,9 @@ class SpriteObject():
                     self.object = self.visible_sprite()
                     sprite_object = self.sprite_animation(player)
 
+                if player.game.pause:
+                    sprite_object = self.visible_sprite()
+
                 sprite_pos = (self.current_ray * SCALE - half_sprite_width,
                               HALF_HEIGHT - half_sprite_height + shift)
                 sprite = pygame.transform.scale(
@@ -319,8 +322,9 @@ class Note(SpriteObject):
 
 
 class Slender(SpriteObject):
-    def __init__(self, parameters, pos):
+    def __init__(self, parameters, pos, game):
         super().__init__(parameters, pos)
+        self.game = game
         self.rect = pygame.Rect(*self.pos, 50, 50)
         self.slender_sound = pygame.mixer.Sound(
             'data/sprites/slender/sounds/moving.mp3')
@@ -337,7 +341,7 @@ class Slender(SpriteObject):
         self.sleep = 5 * FPS
 
     def detect_collision(self, dx, dy):
-        collision_list = collision_objects
+        collision_list = self.game.world.collision_objects
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_list)
@@ -402,7 +406,7 @@ class Slender(SpriteObject):
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
         delta = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
-        if delta < 1000 and self.attack_cooldown <= 0:
+        if delta < 1000 and self.attack_cooldown <= 0 and not player.game.pause:
             self.slender_sound.set_volume(1 - delta / 1000)
             self.active_time += 1
         else:
@@ -416,12 +420,12 @@ class Slender(SpriteObject):
         if self.attack_cooldown <= 0 and self.active_time < 3000:
             px, py = ceil(player.x // TILE), ceil(player.y // TILE)
             sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
-            if ray_casting_npc_player(self.sx, self.sy, world_map, player.pos):
+            if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos):
                 self.npc_action_trigger = True
                 self.move(player)
                 return
             self.npc_action_trigger = False
-            visited = bfs(px, py, sx, sy)
+            visited = bfs(px, py, sx, sy, self.game.world.conj_dict)
             cur_node = (px, py)
             last = cur_node
             while cur_node != (sx, sy):
@@ -457,7 +461,7 @@ class Slender(SpriteObject):
         self.action(player)
 
 
-def bfs(px, py, sx, sy):
+def bfs(px, py, sx, sy, conj_dict):
     queue = deque([(sx, sy)])
     visited = {queue[0]: None}
     while queue:

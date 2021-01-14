@@ -87,6 +87,17 @@ class GameOverInterface:
         self.exit_button.draw()
 
 
+class PlayerInterface:
+    def __init__(self, game):
+        self.game = game
+
+    def render_weapon(self):
+        self.game.screen.blit(self.game.player.weapon.texture, (0, 0))
+        ammo_text = self.game.font_mini.render(f"{self.game.player.weapon.ammo} | {self.game.player.weapon.max_ammo}",
+                                               1, WHITE)
+        self.game.screen.blit(ammo_text, (WIDTH - ammo_text.get_width(), ammo_text.get_height()))
+
+
 class LabirintInterface:
     def __init__(self, game):
         self.game = game
@@ -113,11 +124,5 @@ class PlanetLevelInterface:
     def __init__(self, game):
         self.game = game
 
-        self.background_image = pygame.image.load('data/textures/sky.png')
-        self.background_image = pygame.transform.scale(self.background_image,
-                                                       (WIDTH, HEIGHT))
-
     def render(self):
-        self.game.screen.blit(self.background_image, (0, 0))
-        text = self.game.font.render("To be continued", 1, WHITE)
-        self.game.screen.blit(text, (10, HEIGHT - 200))
+        self.game.player_interface.render_weapon()

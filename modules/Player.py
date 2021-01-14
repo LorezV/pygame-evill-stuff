@@ -1,6 +1,5 @@
 from modules.Settings import *
-from modules.World import collision_objects
-
+from modules.Weapon import Weapon
 
 
 def check_value(value):
@@ -30,6 +29,8 @@ class Player:
         self.current_notes = []
         self.notes_sprite_group = pygame.sprite.Group()
 
+        self.weapon = Weapon("Shotgun", "data/sprites/player/weapon_shotgun/weapon_shotgun.png")
+
         # collision
         self.side = 40
         self.rect = pygame.Rect(*self.pos, self.side, self.side)
@@ -46,7 +47,7 @@ class Player:
         collision_sprites = [(pygame.Rect(*obj.pos, obj.side, obj.side), obj)
                              for obj in self.game.sprites.objects_list
                              if obj.blocked]
-        collision_list = collision_objects + [x[0] for x in collision_sprites
+        collision_list = self.game.world.collision_objects + [x[0] for x in collision_sprites
                                               if not x[1].is_trigger]
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)

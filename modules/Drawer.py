@@ -1,5 +1,4 @@
 from modules.Settings import *
-from modules.World import world_map, mini_map, WORLD_WIDTH, WORLD_HEIGHT
 from numba import njit
 
 
@@ -8,6 +7,9 @@ class Drawer:
         self.game = game
         sky_image = pygame.image.load('data/textures/sky.png').convert()
         sky_image = pygame.transform.scale(sky_image, (WIDTH, HALF_HEIGHT))
+
+        sky2_image = pygame.image.load('data/textures/sky2.png')
+        sky2_image = pygame.transform.scale(sky2_image, (WIDTH, HALF_HEIGHT))
 
         self.door_images = [
             pygame.image.load('data/textures/door.png').convert_alpha(),
@@ -18,7 +20,9 @@ class Drawer:
             2: pygame.image.load('data/textures/wall.png').convert(),
             1: pygame.image.load('data/textures/fence.png').convert_alpha(),
             3: self.door_images[0],
-            'sky': sky_image}
+            'sky': sky_image,
+            'sky_2': sky2_image
+        }
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
@@ -47,16 +51,16 @@ class Drawer:
 
         pygame.draw.circle(self.game.screen_minimap, RED,
                            (int(map_x), int(map_y)), 5)
-        for x, y in mini_map:
+        for x, y in self.game.world.mini_map:
             pygame.draw.rect(self.game.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
         self.game.screen.blit(self.game.screen_minimap, MAP_POS)
 
-    def background(self, angle):
+    def background(self, angle, sky_texture="sky"):
         top_offset = -5 * math.degrees(angle) % WIDTH
-        self.game.screen.blit(self.textures['sky'], (top_offset, 0))
-        self.game.screen.blit(self.textures['sky'], (top_offset - WIDTH, 0))
-        self.game.screen.blit(self.textures['sky'], (top_offset + WIDTH, 0))
+        self.game.screen.blit(self.textures[sky_texture], (top_offset, 0))
+        self.game.screen.blit(self.textures[sky_texture], (top_offset - WIDTH, 0))
+        self.game.screen.blit(self.textures[sky_texture], (top_offset + WIDTH, 0))
 
         pygame.draw.rect(self.game.screen, BLACK,
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
@@ -99,7 +103,7 @@ def mapping(a, b):
 
 
 @njit(fastmath=True)
-def ray_casting(player_pos, player_angle, _world_map):
+def ray_casting(player_pos, player_angle, _world_map, WORLD_WIDTH, WORLD_HEIGHT):
     casted_walls = []
     ox, oy = player_pos
     texture_v, texture_h = 1, 1
@@ -144,8 +148,8 @@ def ray_casting(player_pos, player_angle, _world_map):
     return casted_walls
 
 
-def ray_casting_walls(player, textures):
-    casted_walls = ray_casting(player.pos, player.ang, world_map)
+def ray_casting_walls(player, textures, world):
+    casted_walls = ray_casting(player.pos, player.ang, world.world_map, world.WORLD_WIDTH, world.WORLD_HEIGHT)
     walls = []
     for ray, casted_values in enumerate(casted_walls):
         depth, offset, proj_height, texture = casted_values
