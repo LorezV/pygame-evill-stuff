@@ -1,7 +1,6 @@
-import pygame
 from modules.Settings import *
 from modules.World import collision_objects
-from modules.Sprites import Sprites
+
 
 
 def check_value(value):

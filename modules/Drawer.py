@@ -1,4 +1,3 @@
-import pygame
 from modules.Settings import *
 from modules.World import world_map, mini_map, WORLD_WIDTH, WORLD_HEIGHT
 from numba import njit

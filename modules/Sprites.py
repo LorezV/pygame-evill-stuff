@@ -1,4 +1,3 @@
-import pygame
 from modules.Settings import *
 from collections import deque
 from modules.Drawer import ray_casting_npc_player

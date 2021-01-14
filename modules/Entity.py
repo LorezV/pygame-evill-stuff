@@ -1,9 +1,5 @@
-import pygame, os
-from collections import deque
+import os
 from modules.Settings import *
-from modules.Drawer import ray_casting_npc_player
-from modules.World import world_map
-
 
 class SpriteEntity():
     def __init__(self, textures_folder, pos):
