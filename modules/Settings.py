@@ -66,6 +66,7 @@ RED = (255, 10, 10)
 GREEN = (0, 153, 0)
 BLUE = (0, 0, 128)
 YELLOW = (255, 204, 0)
+DARKGRAY = (36, 37, 41)
 
 MENU_TITLE_COLOR = (255, 200, 0)
 MENU_BUTTON_START_COLOR = (255, 10, 10)
@@ -77,6 +78,9 @@ PORTAL_COORDS = (3255, 120)
 ON_PLAYER_ENTER_COLLISION = pygame.event.custom_type()
 ON_PLAYER_SPAWN = pygame.event.custom_type()
 
-ON_MENU_BUTTON_START = pygame.event.Event(pygame.event.custom_type(), message="User did pressed START button in menu")
-ON_MENU_BUTTON_EXIT = pygame.event.Event(pygame.event.custom_type(), message="User did pressed EXIT button in menu")
-ON_MENU_BUTTON_RESTART = pygame.event.Event(pygame.event.custom_type(), message="User required restart")
+ON_MENU_BUTTON_START = pygame.event.Event(pygame.event.custom_type(),
+                                          message="User did pressed START button in menu")
+ON_MENU_BUTTON_EXIT = pygame.event.Event(pygame.event.custom_type(),
+                                         message="User did pressed EXIT button in menu")
+ON_MENU_BUTTON_RESTART = pygame.event.Event(pygame.event.custom_type(),
+                                            message="User required restart")

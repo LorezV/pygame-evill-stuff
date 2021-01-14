@@ -17,9 +17,11 @@ class GamePauseInterface:
         self.restart_button.size = (560, 80)
         self.restart_button.move_bc(HALF_WIDTH, HALF_HEIGHT)
         self.restart_button.color = RED
+        self.restart_button.background_color = DARKGRAY
         self.exit_button.size = (300, 80)
         self.exit_button.move_bc(HALF_WIDTH, HALF_HEIGHT + 150)
         self.exit_button.color = RED
+        self.exit_button.background_color = DARKGRAY
 
     def render(self):
         pause_text = self.game.font.render('PAUSE', 1, RED)
