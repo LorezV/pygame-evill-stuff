@@ -172,6 +172,7 @@ class PlanetLevel(Level):
                                                                               obj in self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, self.game.sprites)
         self.game.drawer.fps(self.game.clock)
+        self.game.drawer.interface(self.game.player)
         self.game.planet_interface.render()
         if self.game.pause:
             self.game.pause_interface.render()
@@ -197,8 +198,8 @@ class Labirint(Level):
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [obj.object_locate(self.game.player) for
                                                                               obj in self.game.sprites.objects_list])
-        self.game.drawer.mini_map(self.game.player, self.game.sprites)
-        self.game.drawer.fps(self.game.clock)
+        # self.game.drawer.mini_map(self.game.player, self.game.sprites)
+        # self.game.drawer.fps(self.game.clock)
         self.game.labirint_interface.render()
         if self.game.pause:
             self.game.pause_interface.render()
