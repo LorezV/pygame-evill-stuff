@@ -32,7 +32,7 @@ class World:
                 else:
                     conj_dict[(i, j)] = self.find_new_nodes(i, j, level, width, height)
                     if i != len(level[0]) - 1 and level[j][i + 1] == 2:
-                        #notes_spawn.append((i, j))
+                        # notes_spawn.append((i, j))
                         pass
         return conj_dict, world_map, collision_objects, mini_map, notes_spawn, width, height
 

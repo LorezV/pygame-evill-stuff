@@ -56,7 +56,8 @@ class Sprites:
         }
         coords = sample(self.game.world.notes_spawn, 8)
         self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5), self.game),
+            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5),
+                    self.game),
             Note(self.sprite_parametrs['sprite_note'],
                  (coords[0][0] + 0.98, coords[0][1] + 0.5),
                  [pygame.image.load(
@@ -181,6 +182,9 @@ class SpriteObject():
             self.sprite_positions = {angle: pos for angle, pos in
                                      zip(self.sprite_angles, self.object)}
 
+    def delta(self, x, y):
+        return ((x - self.x) ** 2 + (y - self.y) ** 2) ** 0.5
+
     @property
     def sx(self):
         return self.x
@@ -203,7 +207,8 @@ class SpriteObject():
 
             delta_rays = int(gamma / DELTA_ANGLE)
             self.current_ray = CENTER_RAY + delta_rays
-            self.distance *= math.cos(HALF_FOV - self.current_ray * DELTA_ANGLE)
+            self.distance *= math.cos(
+                HALF_FOV - self.current_ray * DELTA_ANGLE)
 
             fake_ray = self.current_ray + FAKE_RAYS
             if 0 <= fake_ray <= FAKE_RAYS_RANGE and self.distance > 30:
@@ -329,7 +334,8 @@ class Slender(SpriteObject):
         self.slender_sound = pygame.mixer.Sound(
             'data/sprites/slender/sounds/moving.mp3')
         self.slender_sound.play(-1)
-        self.attack_sound = pygame.mixer.Sound('data/sprites/slender/sounds/attack.mp3')
+        self.attack_sound = pygame.mixer.Sound(
+            'data/sprites/slender/sounds/attack.mp3')
         self.slender_sound.set_volume(0)
         self.attack_cooldown = 200
         self.count = 0
@@ -369,24 +375,10 @@ class Slender(SpriteObject):
         self.y += dy
 
     def sprite_animation(self, player):
-        if self.animation and self.distance < self.animation_dist and self.attack_cooldown <= 0:
+        if self.animation and self.distance < self.animation_dist and \
+                self.attack_cooldown <= 0:
             sprite_object = self.animation[0]
-            if self.animation_count < self.animation_speed:
-                self.animation_count += 1
-            else:
-                self.animation.rotate()
-                self.animation_count = 0
-                self.count += 1
-            if self.count == 5:
-                self.attack_sound.play()
-            elif self.count == 11:
-                self.attack_cooldown = 200
-                self.count = 0
-                attack = randint(20, 40)
-                if player.health - attack <= 0:
-                    self.slender_sound.stop()
-                player.set_health(player.health - attack)
-
+            self.attack_player(player)
             return sprite_object
         return self.object
 
@@ -402,10 +394,27 @@ class Slender(SpriteObject):
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
 
+    def attack_player(self, player):
+        if self.animation_count < self.animation_speed:
+            self.animation_count += 1
+        else:
+            self.animation.rotate()
+            self.animation_count = 0
+            self.count += 1
+        if self.count == 5:
+            self.attack_sound.play()
+        elif self.count == 11:
+            self.attack_cooldown = 200
+            self.count = 0
+            attack = randint(20, 40)
+            if player.health - attack <= 0:
+                self.slender_sound.stop()
+            player.set_health(player.health - attack)
+
     def action(self, player):
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
-        delta = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
+        delta = self.delta(player.x, player.y)
         if delta < 1000 and self.attack_cooldown <= 0 and not player.game.pause:
             self.slender_sound.set_volume(1 - delta / 1000)
             self.active_time += 1
@@ -420,10 +429,21 @@ class Slender(SpriteObject):
         if self.attack_cooldown <= 0 and self.active_time < 3000:
             px, py = ceil(player.x // TILE), ceil(player.y // TILE)
             sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
-            if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos):
+            if delta < self.animation_dist:
+                self.attack_player(player)
+            if ray_casting_npc_player(self.sx, self.sy,
+                                      self.game.world.world_map,
+                                      player.pos) or self.delta(player.x,
+                                                                player.y) < 100:
                 self.npc_action_trigger = True
                 self.move(player)
                 return
+            while self.count != 11:
+                self.count += 1
+                self.animation_count += 1
+                self.animation.rotate()
+            self.animation_count = 0
+            self.count = 0
             self.npc_action_trigger = False
             visited = bfs(px, py, sx, sy, self.game.world.conj_dict)
             cur_node = (px, py)
