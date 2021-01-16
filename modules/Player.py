@@ -29,7 +29,7 @@ class Player:
         self.current_notes = []
         self.notes_sprite_group = pygame.sprite.Group()
 
-        self.weapon = Weapon("Shotgun", "data/sprites/player/weapon_shotgun/weapon_shotgun.png")
+        self.weapon = Weapon(self.game)
 
         # collision
         self.side = 40
@@ -48,7 +48,7 @@ class Player:
                              for obj in self.game.sprites.objects_list
                              if obj.blocked]
         collision_list = self.game.world.collision_objects + [x[0] for x in collision_sprites
-                                              if not x[1].is_trigger]
+                                                              if not x[1].is_trigger]
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
         hit_indexes = next_rect.collidelistall(collision_list)

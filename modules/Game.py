@@ -94,7 +94,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.labirint_level)
+                self.game.set_level(self.game.planet_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
@@ -110,7 +110,7 @@ class Level:
                         self.game.player.weapon.shoot_request()
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_r:
-                        self.game.player.weapon.reload()
+                        self.game.player.weapon.reload_request()
 
             if self.game.current_level == self.game.labirint_level:
                 if event.type == pygame.KEYUP:
@@ -163,6 +163,8 @@ class PlanetLevel(Level):
 
     def init_level(self):
         pygame.mouse.set_visible(False)
+        pygame.mixer.music.load('data/music/gameplay_music.mp3')
+        pygame.mixer.music.play(-1)
         self.game.sprites.objects_list = self.game.sprites.objects_list[0:1]
         self.game.sprites.objects_list[0].rect.center = 58.5 * TILE, 38.5 * TILE
         self.game.sprites.objects_list[0].pos = self.game.sprites.objects_list[0].x, self.game.sprites.objects_list[
@@ -179,14 +181,11 @@ class PlanetLevel(Level):
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
-            ray_casting_walls(self.game.player, self.game.drawer.textures,
-                              self.game.world) + [
-                obj.object_locate(self.game.player) for
-                obj in self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, self.game.sprites)
         self.game.drawer.fps(self.game.clock)
-        self.game.drawer.interface(self.game.player)
         self.game.planet_interface.render()
+        self.game.player_interface.render()
+        self.game.player.weapon.render()
         if self.game.pause:
             self.game.pause_interface.render()
 
@@ -210,10 +209,6 @@ class Labirint(Level):
         self.game.drawer.background(self.game.player.ang)
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
-                obj.object_locate(self.game.player) for
-                obj in self.game.sprites.objects_list])
-            ray_casting_walls(self.game.player, self.game.drawer.textures,
-                              self.game.world) + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
         # self.game.drawer.mini_map(self.game.player, self.game.sprites)

@@ -91,11 +91,14 @@ class PlayerInterface:
     def __init__(self, game):
         self.game = game
 
-    def render_weapon(self):
-        self.game.screen.blit(self.game.player.weapon.texture, (0, 0))
-        ammo_text = self.game.font_mini.render(f"{self.game.player.weapon.ammo} | {self.game.player.weapon.max_ammo}",
-                                               1, WHITE)
+    def render(self):
+        ammo_text = self.game.font_mini.render(str(self.game.player.weapon.ammo) + " | " + str(self.game.player.weapon.max_ammo), 1, WHITE)
         self.game.screen.blit(ammo_text, (WIDTH - ammo_text.get_width(), ammo_text.get_height()))
+        self.game.drawer.interface(self.game.player)
+
+    def render_crosshair(self):
+        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH - 5, HALF_HEIGHT), (HALF_WIDTH + 5, HALF_HEIGHT), 5)
+        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH, HALF_HEIGHT - 5), (HALF_WIDTH, HALF_HEIGHT + 5), 5)
 
 
 class LabirintInterface:
@@ -117,7 +120,6 @@ class LabirintInterface:
     def render(self):
         noteicons_group.draw(self.game.screen)
         noteicons_group.update()
-        self.game.drawer.interface(self.game.player)
 
 
 class PlanetLevelInterface:
@@ -125,4 +127,4 @@ class PlanetLevelInterface:
         self.game = game
 
     def render(self):
-        self.game.player_interface.render_weapon()
+        self.game.player_interface.render_crosshair()
