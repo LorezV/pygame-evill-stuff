@@ -51,7 +51,8 @@ class Game:
         self.current_level = level
         self.current_level.init_level()
         if self.current_level.level_name is not None:
-            self.world = World(f"data/maps/{self.current_level.level_name}.txt")
+            self.world = World(
+                f"data/maps/{self.current_level.level_name}.txt")
 
     def restart(self):
         self.player.x = PLAYER_SPAWN_POS[0]
@@ -115,9 +116,11 @@ class Level:
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
                         if self.game.pause:
-                            self.game.sprites.objects_list[0].slender_sound.set_volume(0)
+                            self.game.sprites.objects_list[
+                                0].slender_sound.set_volume(0)
                         else:
-                            self.game.sprites.objects_list[0].slender_sound.set_volume(1)
+                            self.game.sprites.objects_list[
+                                0].slender_sound.set_volume(1)
                     elif event.key == pygame.K_SPACE:
                         self.game.player.set_health(0)
 
@@ -160,15 +163,20 @@ class PlanetLevel(Level):
 
     def init_level(self):
         pygame.mouse.set_visible(False)
+        self.game.sprites.destroy_all()
 
     def update(self):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            self.game.sprites.objects_list[0].action(self.game.player)
+            # self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+                obj.object_locate(self.game.player) for
+                obj in self.game.sprites.objects_list])
+            ray_casting_walls(self.game.player, self.game.drawer.textures,
+                              self.game.world) + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, self.game.sprites)
@@ -194,10 +202,15 @@ class Labirint(Level):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            self.game.sprites.objects_list[0].action(self.game.player)
+            if self.game.sprites.objects_list:
+                self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang)
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+                obj.object_locate(self.game.player) for
+                obj in self.game.sprites.objects_list])
+            ray_casting_walls(self.game.player, self.game.drawer.textures,
+                              self.game.world) + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
         # self.game.drawer.mini_map(self.game.player, self.game.sprites)
