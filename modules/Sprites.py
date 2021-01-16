@@ -146,6 +146,12 @@ class Sprites:
                  ),
         ]
 
+    def destroy_all(self):
+        self.objects_list.clear()
+
+
+#  def destoy_one(self, ind):
+#     del self.objects_list[ind]
 
 class SpriteObject():
     def __init__(self, parameters, pos):
