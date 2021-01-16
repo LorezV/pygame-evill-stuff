@@ -21,7 +21,9 @@ class Drawer:
             1: pygame.image.load('data/textures/fence.png').convert_alpha(),
             3: self.door_images[0],
             'sky': sky_image,
-            'sky_2': sky2_image
+            'sky_2': sky2_image,
+            5: pygame.image.load('data/textures/wall_2.png').convert(),
+            6: pygame.image.load('data/textures/fence_2.png').convert()
         }
 
     def fps(self, clock):
