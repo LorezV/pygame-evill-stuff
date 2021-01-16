@@ -54,6 +54,7 @@ class Sprites:
                 'obj_action': deque()
             }
         }
+        self.note_coords = sample(self.game.world.notes_spawn, 8)
         coords = sample(self.game.world.notes_spawn, 8)
         self.objects_list = [
             Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5),

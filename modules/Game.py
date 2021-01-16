@@ -168,8 +168,9 @@ class PlanetLevel(Level):
             self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [obj.object_locate(self.game.player) for
-                                                                              obj in self.game.sprites.objects_list])
+            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+                obj.object_locate(self.game.player) for
+                obj in self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, self.game.sprites)
         self.game.drawer.fps(self.game.clock)
         self.game.drawer.interface(self.game.player)
@@ -196,8 +197,9 @@ class Labirint(Level):
             self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang)
         self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [obj.object_locate(self.game.player) for
-                                                                              obj in self.game.sprites.objects_list])
+            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+                obj.object_locate(self.game.player) for
+                obj in self.game.sprites.objects_list])
         # self.game.drawer.mini_map(self.game.player, self.game.sprites)
         # self.game.drawer.fps(self.game.clock)
         self.game.labirint_interface.render()

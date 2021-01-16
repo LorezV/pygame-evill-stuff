@@ -21,7 +21,7 @@ class World:
         mini_map = set()
         collision_objects = []
         notes_spawn = []
-        # notes_spawn = [(2, 2), (2, 2.2), (2, 2.4), (2, 2.6), (2, 2.8), (2, 3), (2, 3.2), (2, 3.4)]
+        notes_spawn = [(2, 2), (2, 2.2), (2, 2.4), (2, 2.6), (2, 2.8), (2, 3), (2, 3.2), (2, 3.4)]
         for j, row in enumerate(level):
             for i, char in enumerate(row):
                 if char:
@@ -32,7 +32,8 @@ class World:
                 else:
                     conj_dict[(i, j)] = self.find_new_nodes(i, j, level, width, height)
                     if i != len(level[0]) - 1 and level[j][i + 1] == 2:
-                        notes_spawn.append((i, j))
+                        # notes_spawn.append((i, j))
+                        pass
         return conj_dict, world_map, collision_objects, mini_map, notes_spawn, width, height
 
     def check_coords(self, x, y, width, height):
