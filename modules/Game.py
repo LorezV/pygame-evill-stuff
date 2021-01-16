@@ -163,13 +163,17 @@ class PlanetLevel(Level):
 
     def init_level(self):
         pygame.mouse.set_visible(False)
-        self.game.sprites.destroy_all()
+        self.game.sprites.objects_list = self.game.sprites.objects_list[0:1]
+        self.game.sprites.objects_list[0].rect.center = 58.5 * TILE, 38.5 * TILE
+        self.game.sprites.objects_list[0].pos = self.game.sprites.objects_list[0].x, self.game.sprites.objects_list[
+            0].y = (58.5 * TILE, 38.5 * TILE)
+
 
     def update(self):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            # self.game.sprites.objects_list[0].action(self.game.player)
+            self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures,
@@ -199,8 +203,7 @@ class Labirint(Level):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            if self.game.sprites.objects_list:
-                self.game.sprites.objects_list[0].action(self.game.player)
+            self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang)
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures,
