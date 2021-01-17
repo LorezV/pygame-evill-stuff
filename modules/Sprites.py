@@ -64,9 +64,11 @@ class Sprites:
                                 'animation': deque(pygame.image.load(
                                     f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
                                                    for i in range(1, 4)),
-                                'death_animation': [],
-                                'is_dead': None,
-                                'dead_shift': None,
+                                'death_animation': deque(
+                                    pygame.image.load(f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
+                                    for i in range(1, 4)),
+                                'is_dead': False,
+                                'dead_shift': 0.1,
                                 'animation_dist': 70,
                                 'animation_speed': 10,
                                 'blocked': True,
@@ -456,55 +458,21 @@ class Skeleton(SpriteObject):
             self.sleep = 500
             self.active_time = 0
         if self.attack_cooldown <= 0 and self.active_time < 3000:
-            px, py = ceil(player.x // TILE), ceil(player.y // TILE)
-            sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
             if delta < self.animation_dist:
                 self.attack_player(player)
-            if ray_casting_npc_player(self.sx, self.sy,
-                                      self.game.world.world_map,
-                                      player.pos) or self.delta(player.x,
-                                                                player.y) < 100:
+            if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos) or \
+                    self.delta(player.x, player.y) < 70:
                 self.npc_action_trigger = True
                 self.move(player)
                 return
-            while self.count != 11:
+            while self.count != 3:
                 self.count += 1
                 self.animation_count += 1
                 self.animation.rotate()
+
             self.animation_count = 0
             self.count = 0
             self.npc_action_trigger = False
-            visited = bfs(px, py, sx, sy, self.game.world.conj_dict)
-            cur_node = (px, py)
-            last = cur_node
-            while cur_node != (sx, sy):
-                last = cur_node
-                cur_node = visited[cur_node]
-            if last[0] > sx:
-                dx = 1
-            elif last[0] < sx:
-                dx = -1
-            else:
-                if self.x % TILE < self.side:
-                    dx = 1
-                elif self.x % TILE > TILE - self.side:
-                    dx = -1
-                else:
-                    dx = 0
-            if last[1] > sy:
-                dy = 1
-            elif last[1] < sy:
-                dy = -1
-            else:
-                if self.y % TILE < self.side:
-                    dy = 1
-                elif self.y % TILE > TILE - self.side:
-                    dy = -1
-                else:
-                    dy = 0
-            self.detect_collision(dx, dy)
-            self.rect.center = self.x, self.y
-            self.pos = (self.x, self.y)
 
     def update(self, player):
         self.action(player)

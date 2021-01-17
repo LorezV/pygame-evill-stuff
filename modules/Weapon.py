@@ -85,7 +85,7 @@ class Weapon():
         self.ammo -= 1
         self.shoot_sound.play(0)
         self.is_sfx_render = True
-        print(self.game.sprites.sprite_shot)
+
 
     def reload_request(self):
         if self.is_shooting or self.is_reloading or self.ammo == self.max_ammo or self.game.pause or self.action_time > 0:
