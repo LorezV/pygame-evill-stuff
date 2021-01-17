@@ -97,8 +97,8 @@ class PlayerInterface:
         self.game.drawer.interface(self.game.player)
 
     def render_crosshair(self):
-        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH - 5, HALF_HEIGHT), (HALF_WIDTH + 5, HALF_HEIGHT), 5)
-        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH, HALF_HEIGHT - 5), (HALF_WIDTH, HALF_HEIGHT + 5), 5)
+        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH - 5, HALF_HEIGHT), (HALF_WIDTH + 5, HALF_HEIGHT), 2)
+        pygame.draw.line(self.game.screen, RED, (HALF_WIDTH, HALF_HEIGHT - 5), (HALF_WIDTH, HALF_HEIGHT + 5), 2)
 
 
 class LabirintInterface:

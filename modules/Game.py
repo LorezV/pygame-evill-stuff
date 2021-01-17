@@ -185,15 +185,16 @@ class PlanetLevel(Level):
                 except Exception:
                     pass
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
+        walls, wall_shot = ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world)
         self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+            walls + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
         self.game.drawer.mini_map(self.game.player, self.game.sprites)
         self.game.drawer.fps(self.game.clock)
         self.game.planet_interface.render()
         self.game.player_interface.render()
-        self.game.player.weapon.render()
+        self.game.player.weapon.render([wall_shot, self.game.sprites.sprite_shot])
         if self.game.pause:
             self.game.pause_interface.render()
 
@@ -215,8 +216,9 @@ class Labirint(Level):
             self.game.player.movement()
             self.game.sprites.objects_list[0].action(self.game.player)
         self.game.drawer.background(self.game.player.ang)
+        walls, wall_shot = ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world)
         self.game.drawer.world(
-            ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
+            walls + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
         # self.game.drawer.mini_map(self.game.player, self.game.sprites)

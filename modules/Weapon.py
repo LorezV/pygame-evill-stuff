@@ -20,6 +20,10 @@ class Weapon():
         self.shoot_sound = pygame.mixer.Sound("data/sprites/player/weapon_shotgun/shoot.mp3")
         self.reload_sound = pygame.mixer.Sound("data/sprites/player/weapon_shotgun/reload.mp3")
 
+        self.sfx = [pygame.image.load(f'data/sprites/player/boom/{i}.png').convert_alpha() for i in range(9)]
+        self.sfx_animation_pos = 0
+        self.sfx_animation_count = len(self.sfx)
+
         self.shot_animation_count = len(self.shot_animation)
         self.shot_animation_pos = 0
 
@@ -34,8 +38,9 @@ class Weapon():
 
         self.is_shooting = False
         self.is_reloading = False
+        self.is_sfx_render = False
 
-    def render(self):
+    def render(self, shots):
         sprite = self.texture
         if self.is_shooting and not self.game.pause:
             sprite = self.shot_animation[self.shot_animation_pos]
@@ -52,9 +57,20 @@ class Weapon():
             if self.reload_animation_pos >= self.reload_animation_count:
                 self.is_reloading = False
                 self.reload_animation_pos = 0
-
+        if self.sfx_animation_pos < self.sfx_animation_count and self.is_sfx_render:
+            self.shot_projection = min(shots)[1] // 2
+            self.render_sfx()
+        else:
+            self.sfx_animation_pos = 0
+            self.is_sfx_render = False
         self.action_time -= 1
         self.game.screen.blit(sprite, (0, 0))
+
+    def render_sfx(self):
+        sfx = pygame.transform.scale(self.sfx[self.sfx_animation_pos], (self.shot_projection, self.shot_projection))
+        sfx_rect = sfx.get_rect()
+        self.game.screen.blit(sfx, (HALF_WIDTH - sfx_rect.w // 2, HALF_HEIGHT - sfx_rect.h // 2))
+        self.sfx_animation_pos += 1
 
     def shoot_request(self):
         if self.is_shooting or self.is_reloading or self.ammo <= 0 or self.game.pause or self.action_time > 0:
@@ -68,6 +84,8 @@ class Weapon():
         self.is_shooting = True
         self.ammo -= 1
         self.shoot_sound.play(0)
+        self.is_sfx_render = True
+        print(self.game.sprites.sprite_shot)
 
     def reload_request(self):
         if self.is_shooting or self.is_reloading or self.ammo == self.max_ammo or self.game.pause or self.action_time > 0:
@@ -75,7 +93,7 @@ class Weapon():
         self.reload()
 
     def reload(self):
-        self.action_time = (self.max_ammo - self.ammo) * 60
-        self.reload_sound.play(self.max_ammo - self.ammo - 1)
+        self.action_time = 1 * 60
+        self.reload_sound.play(0)
         self.is_reloading = True
-        self.ammo = self.max_ammo
+        self.ammo += 1

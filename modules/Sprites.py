@@ -58,8 +58,8 @@ class Sprites:
                                            in
                                            range(1, 9)],
                                 'viewing_angles': True,
-                                'shift': 0,
-                                'scale': (1, 1),
+                                'shift': 0.2,
+                                'scale': (1, 0.8),
                                 'side': 50,
                                 'animation': deque(pygame.image.load(
                                     f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
@@ -171,6 +171,10 @@ class Sprites:
                  ),
         ]
 
+    @property
+    def sprite_shot(self):
+        return min([obj.is_on_fire for obj in self.objects_list], default=(float('inf'), 0))
+
     def destroy_all(self):
         self.objects_list.clear()
 
@@ -215,6 +219,12 @@ class SpriteObject():
 
     def delta(self, x, y):
         return ((x - self.x) ** 2 + (y - self.y) ** 2) ** 0.5
+
+    @property
+    def is_on_fire(self):
+        if CENTER_RAY - self.side // 2 < self.current_ray < CENTER_RAY + self.side // 2 and self.blocked:
+            return self.distance, self.proj_height
+        return float('inf'), None
 
     @property
     def sx(self):
