@@ -67,7 +67,7 @@ class Sprites:
                                 'death_animation': [],
                                 'is_dead': None,
                                 'dead_shift': None,
-                                'animation_dist': 100,
+                                'animation_dist': 70,
                                 'animation_speed': 10,
                                 'blocked': True,
                                 'is_trigger': False,
@@ -416,8 +416,8 @@ class Skeleton(SpriteObject):
                 self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
             dx = self.sx - player.pos[0]
             dy = self.sy - player.pos[1]
-            dx = 2 if dx < 0 else - 2
-            dy = 2 if dy < 0 else - 2
+            dx = 1 if dx < 0 else - 1
+            dy = 1 if dy < 0 else - 1
             self.detect_collision(dx, dy)
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
@@ -471,25 +471,25 @@ class Skeleton(SpriteObject):
                 last = cur_node
                 cur_node = visited[cur_node]
             if last[0] > sx:
-                dx = 2
+                dx = 1
             elif last[0] < sx:
-                dx = -2
+                dx = -1
             else:
                 if self.x % TILE < self.side:
-                    dx = 2
+                    dx = 1
                 elif self.x % TILE > TILE - self.side:
-                    dx = -2
+                    dx = -1
                 else:
                     dx = 0
             if last[1] > sy:
-                dy = 2
+                dy = 1
             elif last[1] < sy:
-                dy = -2
+                dy = -1
             else:
                 if self.y % TILE < self.side:
-                    dy = 2
+                    dy = 1
                 elif self.y % TILE > TILE - self.side:
-                    dy = -2
+                    dy = -1
                 else:
                     dy = 0
             self.detect_collision(dx, dy)

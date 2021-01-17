@@ -3,6 +3,7 @@ from modules.Sprites import *
 from modules.Drawer import Drawer, ray_casting_walls
 from modules.Interface import *
 from modules.World import World
+from random import sample
 
 
 class Game:
@@ -169,15 +170,20 @@ class PlanetLevel(Level):
         self.game.sprites.objects_list[0].rect.center = 58.5 * TILE, 38.5 * TILE
         self.game.sprites.objects_list[0].pos = self.game.sprites.objects_list[0].x, self.game.sprites.objects_list[
             0].y = (58.5 * TILE, 38.5 * TILE)
-        self.game.sprites.objects_list.append(Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (20, 20), self.game))
-
+        spawn_coords = list(self.game.world.conj_dict.keys())
+        for i in sample(spawn_coords, 10):
+            self.game.sprites.objects_list.append(
+                Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], i, self.game))
 
     def update(self):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            self.game.sprites.objects_list[0].action(self.game.player)
-            self.game.sprites.objects_list[1].action(self.game.player)
+            for i in range(len(self.game.sprites.objects_list)):
+                try:
+                    self.game.sprites.objects_list[i].action(self.game.player)
+                except Exception:
+                    pass
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
