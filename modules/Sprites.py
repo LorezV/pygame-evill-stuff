@@ -52,7 +52,31 @@ class Sprites:
                 'is_trigger': True,
                 'flag': 'note',
                 'obj_action': deque()
-            }
+            },
+            'sprite_skeleton': {'sprite': [pygame.image.load(
+                f'data/sprites/skeleton/idle/1.png').convert_alpha() for i
+                                           in
+                                           range(1, 9)],
+                                'viewing_angles': True,
+                                'shift': 0,
+                                'scale': (1, 1),
+                                'side': 50,
+                                'animation': deque(pygame.image.load(
+                                    f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
+                                                   for i in range(1, 4)),
+                                'death_animation': [],
+                                'is_dead': None,
+                                'dead_shift': None,
+                                'animation_dist': 100,
+                                'animation_speed': 10,
+                                'blocked': True,
+                                'is_trigger': False,
+                                'flag': 'npc',
+                                'obj_action': deque([pygame.image.load(
+                                    f'data/sprites/skeleton/animation_move/{i}.png').convert_alpha()
+                                                     for i in range(1, 7)])
+
+                                }
         }
         self.note_coords = sample(self.game.world.notes_spawn, 8)
         coords = sample(self.game.world.notes_spawn, 8)
@@ -331,6 +355,149 @@ class Note(SpriteObject):
                 range(1, 45))] + [frozenset(range(46, 325))]
             self.sprite_positions = {angle: pos for angle, pos in
                                      zip(self.sprite_angles, self.object)}
+
+
+class Skeleton(SpriteObject):
+    def __init__(self, parameters, pos, game):
+        super().__init__(parameters, pos)
+        self.game = game
+
+        self.rect = pygame.Rect(*self.pos, 50, 50)
+        self.attack_cooldown = 200
+        self.count = 0
+        self.attack_sound = pygame.mixer.Sound(
+            'data/sprites/skeleton/sounds/attack.mp3')
+        self.sprite_angles = [frozenset(range(i, i + 1)) for i in
+                              range(361)]
+        self.sprite_positions = {angle: self.object[0] for angle in
+                                 self.sprite_angles}
+        self.active_time = 0
+        self.sleep = 5 * FPS
+
+    def detect_collision(self, dx, dy):
+        collision_list = self.game.world.collision_objects
+        next_rect = self.rect.copy()
+        next_rect.move_ip(dx, dy)
+        hit_indexes = next_rect.collidelistall(collision_list)
+
+        if len(hit_indexes):
+            delta_x, delta_y = 0, 0
+            for hit_index in hit_indexes:
+                hit_rect = collision_list[hit_index]
+                if dx > 0:
+                    delta_x += next_rect.right - hit_rect.left
+                else:
+                    delta_x += hit_rect.right - next_rect.left
+                if dy > 0:
+                    delta_y += next_rect.bottom - hit_rect.top
+                else:
+                    delta_y += hit_rect.bottom - next_rect.top
+
+            if abs(delta_x - delta_y) < 10:
+                dx, dy = 0, 0
+            elif delta_x > delta_y:
+                dy = 0
+            elif delta_y > delta_x:
+                dx = 0
+        self.x += dx
+        self.y += dy
+
+    def sprite_animation(self, player):
+        if self.animation and self.distance < self.animation_dist and \
+                self.attack_cooldown <= 0:
+            sprite_object = self.animation[0]
+            self.attack_player(player)
+            return sprite_object
+        return self.object
+
+    def move(self, player):
+        if self.distance > self.animation_dist or (
+                (self.x - player.pos[0]) ** 2 + (
+                self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
+            dx = self.sx - player.pos[0]
+            dy = self.sy - player.pos[1]
+            dx = 2 if dx < 0 else - 2
+            dy = 2 if dy < 0 else - 2
+            self.detect_collision(dx, dy)
+            self.rect.center = self.x, self.y
+            self.pos = (self.x, self.y)
+
+    def attack_player(self, player):
+        if self.animation_count < self.animation_speed:
+            self.animation_count += 1
+        else:
+            self.animation.rotate()
+            self.animation_count = 0
+            self.count += 1
+        if self.count == 3:
+            self.attack_sound.play()
+            self.attack_cooldown = 200
+            self.count = 0
+            attack = randint(10, 20)
+            player.set_health(player.health - attack)
+
+    def action(self, player):
+        self.attack_cooldown -= 1
+        self.npc_action_trigger = False
+        delta = self.delta(player.x, player.y)
+        if self.active_time > 10000:
+            self.sleep -= 1
+        if self.sleep < 0:
+            self.sleep = 500
+            self.active_time = 0
+        if self.attack_cooldown <= 0 and self.active_time < 3000:
+            px, py = ceil(player.x // TILE), ceil(player.y // TILE)
+            sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
+            if delta < self.animation_dist:
+                self.attack_player(player)
+            if ray_casting_npc_player(self.sx, self.sy,
+                                      self.game.world.world_map,
+                                      player.pos) or self.delta(player.x,
+                                                                player.y) < 100:
+                self.npc_action_trigger = True
+                self.move(player)
+                return
+            while self.count != 11:
+                self.count += 1
+                self.animation_count += 1
+                self.animation.rotate()
+            self.animation_count = 0
+            self.count = 0
+            self.npc_action_trigger = False
+            visited = bfs(px, py, sx, sy, self.game.world.conj_dict)
+            cur_node = (px, py)
+            last = cur_node
+            while cur_node != (sx, sy):
+                last = cur_node
+                cur_node = visited[cur_node]
+            if last[0] > sx:
+                dx = 2
+            elif last[0] < sx:
+                dx = -2
+            else:
+                if self.x % TILE < self.side:
+                    dx = 2
+                elif self.x % TILE > TILE - self.side:
+                    dx = -2
+                else:
+                    dx = 0
+            if last[1] > sy:
+                dy = 2
+            elif last[1] < sy:
+                dy = -2
+            else:
+                if self.y % TILE < self.side:
+                    dy = 2
+                elif self.y % TILE > TILE - self.side:
+                    dy = -2
+                else:
+                    dy = 0
+            self.detect_collision(dx, dy)
+            self.rect.center = self.x, self.y
+            self.pos = (self.x, self.y)
+
+    def update(self, player):
+        self.action(player)
 
 
 class Slender(SpriteObject):

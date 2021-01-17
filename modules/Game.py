@@ -169,6 +169,7 @@ class PlanetLevel(Level):
         self.game.sprites.objects_list[0].rect.center = 58.5 * TILE, 38.5 * TILE
         self.game.sprites.objects_list[0].pos = self.game.sprites.objects_list[0].x, self.game.sprites.objects_list[
             0].y = (58.5 * TILE, 38.5 * TILE)
+        self.game.sprites.objects_list.append(Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (20, 20), self.game))
 
 
     def update(self):
@@ -176,6 +177,7 @@ class PlanetLevel(Level):
         if not self.game.pause:
             self.game.player.movement()
             self.game.sprites.objects_list[0].action(self.game.player)
+            self.game.sprites.objects_list[1].action(self.game.player)
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         self.game.drawer.world(
             ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world) + [
