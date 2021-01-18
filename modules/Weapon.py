@@ -1,5 +1,6 @@
 import pygame
 from modules.Settings import *
+from modules.Drawer import ray_casting_npc_player
 import os
 
 
@@ -85,7 +86,12 @@ class Weapon():
         self.ammo -= 1
         self.shoot_sound.play(0)
         self.is_sfx_render = True
-
+        for obj in sorted(self.game.sprites.objects_list, key=lambda obj: obj.distance):
+            if obj.is_on_fire[1]:
+                if obj.is_dead != "immortal" and not obj.is_dead:
+                    if ray_casting_npc_player(obj.x, obj.y, self.game.world.world_map, self.game.player.pos):
+                        del self.game.sprites.objects_list[self.game.sprites.objects_list.index(obj)]
+                break
 
     def reload_request(self):
         if self.is_shooting or self.is_reloading or self.ammo == self.max_ammo or self.game.pause or self.action_time > 0:

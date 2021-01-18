@@ -175,7 +175,7 @@ class Sprites:
 
     @property
     def sprite_shot(self):
-        return min([obj.is_on_fire for obj in self.objects_list], default=(float('inf'), 0))
+        return min([obj.is_on_fire for obj in self.objects_list])
 
     def destroy_all(self):
         self.objects_list.clear()
@@ -224,9 +224,9 @@ class SpriteObject():
 
     @property
     def is_on_fire(self):
-        if CENTER_RAY - self.side // 2 < self.current_ray < CENTER_RAY + self.side // 2 and self.blocked:
+        if CENTER_RAY - self.side // 4 < self.current_ray < CENTER_RAY + self.side // 4 and self.blocked:
             return self.distance, self.proj_height
-        return float('inf'), None
+        return float("inf"), None
 
     @property
     def sx(self):
