@@ -65,10 +65,10 @@ class Sprites:
                                     f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
                                                    for i in range(1, 4)),
                                 'death_animation': deque(
-                                    pygame.image.load(f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
+                                    pygame.image.load(f'data/sprites/skeleton/snimation_death/{i}.png').convert_alpha()
                                     for i in range(1, 4)),
                                 'is_dead': False,
-                                'dead_shift': 0.1,
+                                'dead_shift': 0.8,
                                 'animation_dist': 70,
                                 'animation_speed': 10,
                                 'blocked': True,
@@ -224,7 +224,7 @@ class SpriteObject():
 
     @property
     def is_on_fire(self):
-        if CENTER_RAY - self.side // 4 < self.current_ray < CENTER_RAY + self.side // 4 and self.blocked:
+        if CENTER_RAY - self.side // 8 < self.current_ray + 10 < CENTER_RAY + self.side // 8 and self.blocked:
             return self.distance, self.proj_height
         return float("inf"), None
 
@@ -242,7 +242,7 @@ class SpriteObject():
             self.distance = math.sqrt(dx ** 2 + dy ** 2)
 
             self.theta = math.atan2(dy, dx)
-            gamma = self.theta - player.ang
+            gamma = self.theta - player.angle
             if dx > 0 and 180 <= math.degrees(player.ang) <= 360 or \
                     dx < 0 and dy < 0:
                 gamma += DOUBLE_PI
@@ -475,7 +475,8 @@ class Skeleton(SpriteObject):
             self.npc_action_trigger = False
 
     def update(self, player):
-        self.action(player)
+        if not self.is_dead:
+            self.action(player)
 
 
 class Slender(SpriteObject):

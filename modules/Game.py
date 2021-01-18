@@ -166,10 +166,7 @@ class PlanetLevel(Level):
         pygame.mouse.set_visible(False)
         pygame.mixer.music.load('data/music/gameplay_music.mp3')
         pygame.mixer.music.play(-1)
-        self.game.sprites.objects_list = self.game.sprites.objects_list[0:1]
-        self.game.sprites.objects_list[0].rect.center = 58.5 * TILE, 38.5 * TILE
-        self.game.sprites.objects_list[0].pos = self.game.sprites.objects_list[0].x, self.game.sprites.objects_list[
-            0].y = (58.5 * TILE, 38.5 * TILE)
+        self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
         for i in sample(spawn_coords, 10):
             self.game.sprites.objects_list.append(
@@ -181,7 +178,7 @@ class PlanetLevel(Level):
             self.game.player.movement()
             for i in range(len(self.game.sprites.objects_list)):
                 try:
-                    self.game.sprites.objects_list[i].action(self.game.player)
+                    self.game.sprites.objects_list[i].update(self.game.player)
                 except Exception:
                     pass
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
@@ -214,7 +211,7 @@ class Labirint(Level):
         super().update()
         if not self.game.pause:
             self.game.player.movement()
-            self.game.sprites.objects_list[0].action(self.game.player)
+            self.game.sprites.objects_list[0].update(self.game.player)
         self.game.drawer.background(self.game.player.ang)
         walls, wall_shot = ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world)
         self.game.drawer.world(
