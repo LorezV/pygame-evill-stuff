@@ -386,6 +386,7 @@ class Skeleton(SpriteObject):
         self.active_time = 0
         self.sleep = 5 * FPS
         self.last_player_pos = (self.x, self.y)
+        self.health = 1
 
     def detect_collision(self, dx, dy):
         collision_list = self.game.world.collision_objects
@@ -515,6 +516,7 @@ class Slender(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
+
 
     def detect_collision(self, dx, dy):
         collision_list = self.game.world.collision_objects

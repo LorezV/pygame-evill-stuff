@@ -90,8 +90,13 @@ class Weapon():
             if obj.is_on_fire[1]:
                 if obj.is_dead != "immortal" and not obj.is_dead:
                     if ray_casting_npc_player(obj.x, obj.y, self.game.world.world_map, self.game.player.pos):
-                        obj.is_dead = True
-                        obj.blocked = False
+                        if obj.flag == 'npc':
+                            if obj.health:
+                                obj.health -= 1
+                            else:
+
+                                obj.is_dead = True
+                                obj.blocked = False
                 break
 
     def reload_request(self):
