@@ -385,6 +385,7 @@ class Skeleton(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
+        self.last_player_pos = (self.x, self.y)
 
     def detect_collision(self, dx, dy):
         collision_list = self.game.world.collision_objects
@@ -422,7 +423,7 @@ class Skeleton(SpriteObject):
             return sprite_object
         return self.object
 
-    def move(self, player):
+    def move(self, player, flag=False):
         if self.distance > self.animation_dist or (
                 (self.x - player.pos[0]) ** 2 + (
                 self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
@@ -430,6 +431,20 @@ class Skeleton(SpriteObject):
             dy = self.sy - player.pos[1]
             dx = 1 if dx < 0 else - 1
             dy = 1 if dy < 0 else - 1
+            self.detect_collision(dx, dy)
+            self.rect.center = self.x, self.y
+            self.pos = (self.x, self.y)
+        if flag:
+            dx = 0
+            if self.x > self.last_player_pos[0]:
+                dx = -1
+            elif self.x < self.last_player_pos[0]:
+                dx = 1
+            dy = 0
+            if self.x > self.last_player_pos[1]:
+                dy = -1
+            elif self.x < self.last_player_pos[1]:
+                dy = 1
             self.detect_collision(dx, dy)
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
@@ -463,13 +478,15 @@ class Skeleton(SpriteObject):
             if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos) or \
                     self.delta(player.x, player.y) < 70:
                 self.npc_action_trigger = True
+                self.last_player_pos = player.x, player.y
                 self.move(player)
                 return
+            else:
+                self.move(player, True)
             while self.count != 3:
                 self.count += 1
                 self.animation_count += 1
                 self.animation.rotate()
-
             self.animation_count = 0
             self.count = 0
             self.npc_action_trigger = False

@@ -168,7 +168,7 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 10):
+        for i in sample(spawn_coords, 50):
             self.game.sprites.objects_list.append(
                 Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], i, self.game))
 
