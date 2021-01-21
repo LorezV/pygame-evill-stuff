@@ -116,6 +116,7 @@ class Player:
 
         if PORTAL_COORDS[0] - 50 < self.x < PORTAL_COORDS[0] + 50 and PORTAL_COORDS[1] - 50 < self.y < PORTAL_COORDS[
             1] + 50 and self.game.portal_open:
+            self.game.portal_open = False
             self.game.set_level(self.game.planet_level)
 
     def keys_control(self):

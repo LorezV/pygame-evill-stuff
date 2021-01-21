@@ -22,7 +22,7 @@ class Sprites:
                     f'data/sprites/slender/animation_attack/{i}.png').convert_alpha()
                                    for i in range(11)),
                 'death_animation': [],
-                'is_dead': None,
+                'is_dead': False,
                 'dead_shift': None,
                 'animation_dist': 100,
                 'animation_speed': 2,
@@ -81,97 +81,7 @@ class Sprites:
                                 }
         }
         self.note_coords = sample(self.game.world.notes_spawn, 8)
-        coords = sample(self.game.world.notes_spawn, 8)
-        self.objects_list = [
-            Slender(self.sprite_parametrs['sprite_slender'], (58.5, 38.5),
-                    self.game),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[0][0] + 0.98, coords[0][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/1.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "1",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/1.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/1_unfound.png").convert_alpha())),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[1][0] + 0.98, coords[1][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/2.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "2",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/2.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/2_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[2][0] + 0.98, coords[2][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/3.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "3",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/3.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/3_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[3][0] + 0.98, coords[3][1] + 0.5), [pygame.image.load(
-                    f'data/sprites/note/4.png').convert_alpha(),
-                                                             pygame.image.load(
-                                                                 f"data/sprites/note/angled.png").convert_alpha()],
-                 "4",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/4.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/4_unfound.png").convert_alpha())),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[4][0] + 0.98, coords[4][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/5.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "5",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/5.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/5_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[5][0] + 0.98, coords[5][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/6.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "6",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/6.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/6_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[6][0] + 0.98, coords[6][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/7.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "7",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/7.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/7_unfound.png").convert_alpha())
-                 ),
-            Note(self.sprite_parametrs['sprite_note'],
-                 (coords[7][0] + 0.98, coords[7][1] + 0.5),
-                 [pygame.image.load(
-                     f'data/sprites/note/8.png').convert_alpha(),
-                  pygame.image.load(
-                      f"data/sprites/note/angled.png").convert_alpha()], "8",
-                 NoteIcon(pygame.image.load(
-                     f"data/sprites/note/icons/8.png").convert_alpha(),
-                          pygame.image.load(
-                              f"data/sprites/note/icons/8_unfound.png").convert_alpha())
-                 ),
-        ]
+        self.objects_list = []
 
     @property
     def sprite_shot(self):
@@ -224,7 +134,7 @@ class SpriteObject():
 
     @property
     def is_on_fire(self):
-        if CENTER_RAY - self.side // 8 < self.current_ray + 10 < CENTER_RAY + self.side // 8 and self.blocked:
+        if CENTER_RAY - self.side // 2 < self.current_ray < CENTER_RAY + self.side // 2 and self.blocked:
             return self.distance, self.proj_height
         return float("inf"), None
 
@@ -375,7 +285,7 @@ class Skeleton(SpriteObject):
         self.game = game
 
         self.rect = pygame.Rect(*self.pos, 50, 50)
-        self.attack_cooldown = 200
+        self.attack_cooldown = 1 * FPS
         self.count = 0
         self.attack_sound = pygame.mixer.Sound(
             'data/sprites/skeleton/sounds/attack.mp3')
@@ -383,8 +293,7 @@ class Skeleton(SpriteObject):
                               range(361)]
         self.sprite_positions = {angle: self.object[0] for angle in
                                  self.sprite_angles}
-        self.active_time = 0
-        self.sleep = 5 * FPS
+        self.death_sound = pygame.mixer.Sound('data/sprites/skeleton/sounds/skeleton_death.mp3')
         self.last_player_pos = (self.x, self.y)
         self.health = 1
 
@@ -436,16 +345,37 @@ class Skeleton(SpriteObject):
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
         if flag:
-            dx = 0
-            if self.x > self.last_player_pos[0]:
-                dx = -1
-            elif self.x < self.last_player_pos[0]:
+            x, y = self.last_player_pos
+            px, py = ceil(x // TILE), ceil(y // TILE)
+            sx, sy = ceil(self.x // TILE), ceil(self.y // TILE)
+            visited = bfs(px, py, sx, sy, self.game.world.conj_dict)
+            cur_node = (px, py)
+            last = cur_node
+            while cur_node != (sx, sy):
+                last = cur_node
+                cur_node = visited[cur_node]
+            if last[0] > sx:
                 dx = 1
-            dy = 0
-            if self.x > self.last_player_pos[1]:
-                dy = -1
-            elif self.x < self.last_player_pos[1]:
+            elif last[0] < sx:
+                dx = -1
+            else:
+                if self.x % TILE < self.side:
+                    dx = 1
+                elif self.x % TILE > TILE - self.side:
+                    dx = -1
+                else:
+                    dx = 0
+            if last[1] > sy:
                 dy = 1
+            elif last[1] < sy:
+                dy = -1
+            else:
+                if self.y % TILE < self.side:
+                    dy = 1
+                elif self.y % TILE > TILE - self.side:
+                    dy = -1
+                else:
+                    dy = 0
             self.detect_collision(dx, dy)
             self.rect.center = self.x, self.y
             self.pos = (self.x, self.y)
@@ -459,7 +389,7 @@ class Skeleton(SpriteObject):
             self.count += 1
         if self.count == 3:
             self.attack_sound.play()
-            self.attack_cooldown = 200
+            self.attack_cooldown = 1 * FPS
             self.count = 0
             attack = randint(10, 20)
             player.set_health(player.health - attack)
@@ -468,12 +398,7 @@ class Skeleton(SpriteObject):
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
         delta = self.delta(player.x, player.y)
-        if self.active_time > 10000:
-            self.sleep -= 1
-        if self.sleep < 0:
-            self.sleep = 500
-            self.active_time = 0
-        if self.attack_cooldown <= 0 and self.active_time < 3000:
+        if self.attack_cooldown <= 0:
             if delta < self.animation_dist:
                 self.attack_player(player)
             if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos) or \
@@ -516,7 +441,6 @@ class Slender(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
-
 
     def detect_collision(self, dx, dy):
         collision_list = self.game.world.collision_objects

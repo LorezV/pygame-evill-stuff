@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QInputDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QInputDialog, QFileDialog
 from PyQt5.QtGui import QColor
 import sys
 
@@ -12,9 +12,11 @@ class Level_maker(QMainWindow):
         self.r_btn.clicked.connect(self.change_color)
         self.b_btn.clicked.connect(self.change_color)
         self.w_btn.clicked.connect(self.change_color)
+        self.name = ''
 
     def setupUI(self):
         self.setGeometry(500, 100, 1200, 800)
+        self.setWindowTitle('Редактор карт')
         self.btns = []
         for i in range(0, 600, 15):
             row = []
@@ -40,9 +42,32 @@ class Level_maker(QMainWindow):
         self.w_btn.resize(180, 40)
         self.save_btn = QPushButton(self)
         self.save_btn.setText('Сохранить карту')
-        self.save_btn.move(1000, 700)
+        self.save_btn.move(1000, 750)
         self.save_btn.resize(180, 40)
         self.save_btn.clicked.connect(self.saves)
+        self.open_btn = QPushButton(self)
+        self.open_btn.setText('Открыть карту')
+        self.open_btn.move(1000, 700)
+        self.open_btn.resize(180, 40)
+        self.open_btn.clicked.connect(self.open_map)
+
+    def open_map(self):
+        fname = QFileDialog.getOpenFileName(self, 'Выбрать карту', '', "Картинка (*.txt)")[0]
+        with open(fname, encoding='utf-8', mode='r') as f:
+            level = list(f.readlines())
+            level = [list(i.strip('\n')) for i in level]
+        self.name = fname.split('/')[-1].rstrip('.txt')
+        free, walls, another = self.check()
+        for i, row in enumerate(self.btns):
+            for j, btn in enumerate(row):
+                if level[i][j] == free:
+                    btn.setStyleSheet(f"background-color: {self.colors[1].name()}")
+                elif level[i][j] == walls:
+                    btn.setStyleSheet(f"background-color: {self.colors[0].name()}")
+                elif level[i][j] == another:
+                    btn.setStyleSheet(f"background-color: {self.colors[2].name()}")
+                else:
+                    btn.setStyleSheet(f"background-color: {QColor(0, 255, 0).name()}")
 
     def change_color(self):
         if self.sender().text() == 'Клетка стены':
@@ -74,14 +99,13 @@ class Level_maker(QMainWindow):
                     row += another
                 if btn.styleSheet() == 'background-color: #ff0000':
                     row += walls
-            print(row)
             row += '\n'
             f.write(row)
         f.close()
 
     def run(self):
         name, ok_pressed = QInputDialog.getText(self, "Введите название",
-                                                "Как вы назовёте файл?")
+                                                "Как вы назовёте файл?", text=self.name)
         if ok_pressed:
             return name
 
@@ -94,7 +118,7 @@ class Level_maker(QMainWindow):
             5, 0, 9, 1)
         another, ok_pressed3 = QInputDialog.getInt(
             self, "Введите кодировку дополнительной текстуры", "Кодировка дополнительной текстуры",
-            9, 0, 9, 1)
+            6, 0, 9, 1)
         if not ok_pressed1:
             free = '0'
         if not ok_pressed2:

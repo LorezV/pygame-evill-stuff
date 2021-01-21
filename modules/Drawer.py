@@ -31,7 +31,7 @@ class Drawer:
         render = self.game.font_mini.render(display_fps, 0, GREEN)
         self.game.screen.blit(render, FPS_POS)
 
-    def mini_map(self, player, sprites):
+    def mini_map(self, player, sprites, flag=False):
         self.game.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
         # map_x_col, map_y_col = player.rect.x // MAP_SCALE,
@@ -39,11 +39,13 @@ class Drawer:
         pygame.draw.line(self.game.screen_minimap, YELLOW, (map_x, map_y),
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
-
-        for a in sprites.objects_list:
-            x, y = a.pos
-            pygame.draw.rect(self.game.screen_minimap, YELLOW,
-                             (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
+        if flag:
+            for a in sprites.objects_list:
+                if a.flag != 'npc' or a.is_dead == True:
+                    continue
+                x, y = a.pos
+                pygame.draw.rect(self.game.screen_minimap, RED,
+                                 (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
         # Draw collision rect
         # pygame.draw.rect(self.screen_minimap, "green", (

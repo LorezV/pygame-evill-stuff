@@ -34,7 +34,7 @@ class Weapon():
         self.action_time = 0
 
         self.damage = 50
-        self.max_ammo = 6
+        self.max_ammo = 12
         self.ammo = self.max_ammo
 
         self.is_shooting = False
@@ -94,7 +94,7 @@ class Weapon():
                             if obj.health:
                                 obj.health -= 1
                             else:
-
+                                obj.death_sound.play()
                                 obj.is_dead = True
                                 obj.blocked = False
                 break

@@ -122,6 +122,7 @@ class LabirintInterface:
         noteicons_group.update()
 
 
+
 class PlanetLevelInterface:
     def __init__(self, game):
         self.game = game
