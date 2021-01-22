@@ -57,7 +57,6 @@ class Game:
                 f"data/maps/{self.current_level.level_name}.txt")
         self.current_level.init_level()
 
-
     def restart(self):
         # self.player.x = PLAYER_SPAWN_POS[0]
         # self.player.y = PLAYER_SPAWN_POS[1]
@@ -200,10 +199,8 @@ class FinalLevel(Level):
                                                   self.game)]
         spawn_coords = list(self.game.world.conj_dict.keys())
         for i in sample(spawn_coords, 100):
-            x, y = i
-            if (x > 7 and y) or (x and y > 7):
-                self.game.sprites.objects_list.append(
-                    Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (x + 0.5, y + 0.5), self.game))
+            self.game.sprites.objects_list.append(
+                Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
 
     def update(self):
         super().update()
@@ -242,9 +239,9 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 10):
+        for i in sample(spawn_coords, 50):
             self.game.sprites.objects_list.append(
-                    Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
+                Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
 
     def update(self):
         super().update()
