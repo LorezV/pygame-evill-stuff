@@ -33,6 +33,7 @@ class Game:
         self.game_over_interface = GameOverInterface(self)
         self.planet_interface = PlanetLevelInterface(self)
         self.player_interface = PlayerInterface(self)
+        self.win_interface = WinInterface(self)
 
         # Init levels
         self.menu = Menu(self)
@@ -51,10 +52,11 @@ class Game:
 
     def set_level(self, level):
         self.current_level = level
-        self.current_level.init_level()
         if self.current_level.level_name is not None:
             self.world = World(
                 f"data/maps/{self.current_level.level_name}.txt")
+        self.current_level.init_level()
+
 
     def restart(self):
         # self.player.x = PLAYER_SPAWN_POS[0]
@@ -96,7 +98,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.labirint_level)
+                self.game.set_level(self.game.planet_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
@@ -161,6 +163,24 @@ class Loose(Level):
         self.game.game_over_interface.render()
 
 
+class Win(Level):
+    def __init__(self, game):
+        super().__init__(game)
+
+    def init_level(self):
+        pygame.mouse.set_visible(True)
+        pygame.mixer.quit()
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.load('data/music/limit_lvl2.mp3')
+        pygame.mixer.music.play(-1)
+
+    def update(self):
+        super().update()
+        self.game.screen.fill(BLACK)
+        self.game.win_interface.render()
+
+
 class FinalLevel(Level):
     def __init__(self, game):
         super().__init__(game)
@@ -222,11 +242,9 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 50):
-            x, y = i
-            if (x > 7 and y) or (x and y > 7):
-                self.game.sprites.objects_list.append(
-                    Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (x + 0.5, y + 0.5), self.game))
+        for i in sample(spawn_coords, 10):
+            self.game.sprites.objects_list.append(
+                    Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
 
     def update(self):
         super().update()

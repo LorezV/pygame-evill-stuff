@@ -40,14 +40,6 @@ class Drawer:
         pygame.draw.line(self.game.screen_minimap, YELLOW, (map_x, map_y),
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
-        if flag:
-            for a in sprites.objects_list:
-                if a.flag != 'npc' or a.is_dead:
-                    continue
-                check = True
-                x, y = a.pos
-                pygame.draw.rect(self.game.screen_minimap, RED,
-                                 (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
 
         # Draw collision rect
         # pygame.draw.rect(self.screen_minimap, "green", (
@@ -60,6 +52,15 @@ class Drawer:
         for x, y in self.game.world.mini_map:
             pygame.draw.rect(self.game.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
+        if flag:
+            for a in sprites.objects_list:
+                if a.flag != 'npc' or a.is_dead:
+                    continue
+                check = True
+                x, y = a.pos
+                pygame.draw.rect(self.game.screen_minimap, RED,
+                                 (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
+
         self.game.screen.blit(self.game.screen_minimap, MAP_POS)
         return check
 

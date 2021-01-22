@@ -31,6 +31,38 @@ class GamePauseInterface:
         self.exit_button.draw()
 
 
+class WinInterface:
+    def __init__(self, game):
+        self.game = game
+
+        self.restart_button = Button('RESTART', ON_MENU_BUTTON_RESTART, self.game)
+        self.exit_button = Button("EXIT", ON_MENU_BUTTON_EXIT, self.game)
+
+        self.initUi()
+
+    def initUi(self):
+        self.restart_button.size = (560, 80)
+        self.restart_button.move_bc(HALF_WIDTH, HALF_HEIGHT)
+        self.restart_button.color = RED
+        self.restart_button.background_color = DARKGRAY
+        self.exit_button.move_bc(HALF_WIDTH, HALF_HEIGHT + 150)
+        self.exit_button.color = MENU_BUTTON_EXIT_COLOR
+
+    def render(self):
+        # Задний фон
+        self.game.screen.blit(self.game.menu_picture, (0, 0),
+                              (0, 0, WIDTH, HEIGHT))
+
+        # Кнопки
+        self.restart_button.draw()
+        self.exit_button.draw()
+
+        # Лого
+        label = self.game.font.render('Evill Stuff', 1, MENU_TITLE_COLOR)
+        self.game.screen.blit(label, (
+            WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
+
+
 class MenuInterface:
     def __init__(self, game):
         self.game = game
@@ -92,7 +124,8 @@ class PlayerInterface:
         self.game = game
 
     def render(self):
-        ammo_text = self.game.font_mini.render(str(self.game.player.weapon.ammo) + " | " + str(self.game.player.weapon.max_ammo), 1, WHITE)
+        ammo_text = self.game.font_mini.render(
+            str(self.game.player.weapon.ammo) + " | " + str(self.game.player.weapon.max_ammo), 1, WHITE)
         self.game.screen.blit(ammo_text, (WIDTH - ammo_text.get_width(), ammo_text.get_height()))
         self.game.drawer.interface(self.game.player)
 
@@ -120,7 +153,6 @@ class LabirintInterface:
     def render(self):
         noteicons_group.draw(self.game.screen)
         noteicons_group.update()
-
 
 
 class PlanetLevelInterface:
