@@ -444,10 +444,11 @@ class Slender(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
-        self.health = 1
+        self.health = 19
 
     def dead_animation(self):
-        self.animation_speed = FPS
+        self.animation_speed = FPS // 2
+        self.slender_sound.stop()
         if len(self.death_animation):
             if self.death_animation_count < self.animation_speed:
                 self.dead_sprite = self.death_animation[0]

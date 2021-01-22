@@ -179,7 +179,7 @@ class FinalLevel(Level):
         self.game.sprites.objects_list = [Slender(self.game.sprites.sprite_parametrs['sprite_slender'], (29.5, 20.5),
                                                   self.game)]
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 20):
+        for i in sample(spawn_coords, 50):
             x, y = i
             if (x > 7 and y) or (x and y > 7):
                 self.game.sprites.objects_list.append(
