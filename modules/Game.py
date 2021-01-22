@@ -98,7 +98,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.planet_level)
+                self.game.set_level(self.game.labirint_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
@@ -199,7 +199,7 @@ class FinalLevel(Level):
         self.game.sprites.objects_list = [Slender(self.game.sprites.sprite_parametrs['sprite_slender'], (29.5, 20.5),
                                                   self.game)]
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 50):
+        for i in sample(spawn_coords, 100):
             x, y = i
             if (x > 7 and y) or (x and y > 7):
                 self.game.sprites.objects_list.append(
