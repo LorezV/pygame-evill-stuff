@@ -32,6 +32,7 @@ class Drawer:
         self.game.screen.blit(render, FPS_POS)
 
     def mini_map(self, player, sprites, flag=False):
+        check = False
         self.game.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
         # map_x_col, map_y_col = player.rect.x // MAP_SCALE,
@@ -41,8 +42,9 @@ class Drawer:
                           map_y + 12 * math.sin(player.angle)), 2)
         if flag:
             for a in sprites.objects_list:
-                if a.flag != 'npc' or a.is_dead == True:
+                if a.flag != 'npc' or a.is_dead:
                     continue
+                check = True
                 x, y = a.pos
                 pygame.draw.rect(self.game.screen_minimap, RED,
                                  (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
@@ -59,6 +61,7 @@ class Drawer:
             pygame.draw.rect(self.game.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
         self.game.screen.blit(self.game.screen_minimap, MAP_POS)
+        return check
 
     def background(self, angle, sky_texture="sky"):
         top_offset = -5 * math.degrees(angle) % WIDTH

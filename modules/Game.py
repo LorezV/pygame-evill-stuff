@@ -96,7 +96,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.final_level)
+                self.game.set_level(self.game.labirint_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
@@ -222,7 +222,7 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 70):
+        for i in sample(spawn_coords, 50):
             x, y = i
             if (x > 7 and y) or (x and y > 7):
                 self.game.sprites.objects_list.append(
@@ -243,7 +243,10 @@ class PlanetLevel(Level):
             walls + [
                 obj.object_locate(self.game.player) for
                 obj in self.game.sprites.objects_list])
-        self.game.drawer.mini_map(self.game.player, self.game.sprites, True)
+        check = self.game.drawer.mini_map(self.game.player, self.game.sprites, True)
+        if not check:
+            self.game.set_level(self.game.final_level)
+            return
         # self.game.drawer.fps(self.game.clock)
         self.game.planet_interface.render()
         self.game.player_interface.render()
