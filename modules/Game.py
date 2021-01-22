@@ -96,7 +96,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.planet_level)
+                self.game.set_level(self.game.final_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
@@ -176,9 +176,14 @@ class FinalLevel(Level):
         pygame.mixer.music.load('data/music/limit_lvl2.mp3')
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
-        self.game.sprites.objects_list = [
-            Slender(self.game.sprites.sprite_parametrs['sprite_slender'], (20.5, 29.5),
-                    self.game)]
+        self.game.sprites.objects_list = [Slender(self.game.sprites.sprite_parametrs['sprite_slender'], (29.5, 20.5),
+                                                  self.game)]
+        spawn_coords = list(self.game.world.conj_dict.keys())
+        for i in sample(spawn_coords, 20):
+            x, y = i
+            if (x > 7 and y) or (x and y > 7):
+                self.game.sprites.objects_list.append(
+                    Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (x + 0.5, y + 0.5), self.game))
 
     def update(self):
         super().update()
@@ -217,7 +222,7 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 10):
+        for i in sample(spawn_coords, 70):
             x, y = i
             if (x > 7 and y) or (x and y > 7):
                 self.game.sprites.objects_list.append(

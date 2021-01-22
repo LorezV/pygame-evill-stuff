@@ -21,9 +21,11 @@ class Sprites:
                 'animation': deque(pygame.image.load(
                     f'data/sprites/slender/animation_attack/{i}.png').convert_alpha()
                                    for i in range(11)),
-                'death_animation': [],
+                'death_animation': deque(
+                    pygame.image.load(f'data/sprites/slender/animation_death/{i}.png').convert_alpha()
+                    for i in range(1, 22)),
                 'is_dead': False,
-                'dead_shift': None,
+                'dead_shift': 0.3,
                 'animation_dist': 100,
                 'animation_speed': 2,
                 'blocked': True,
@@ -433,6 +435,7 @@ class Slender(SpriteObject):
         self.attack_sound = pygame.mixer.Sound(
             'data/sprites/slender/sounds/attack.mp3')
         self.slender_sound.set_volume(0)
+        self.death_sound = pygame.mixer.Sound('data/sprites/slender/sounds/death_sound.mp3')
         self.attack_cooldown = 200
         self.count = 0
         self.sprite_angles = [frozenset(range(i, i + 1)) for i in
@@ -441,6 +444,18 @@ class Slender(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
+        self.health = 1
+
+    def dead_animation(self):
+        self.animation_speed = FPS
+        if len(self.death_animation):
+            if self.death_animation_count < self.animation_speed:
+                self.dead_sprite = self.death_animation[0]
+                self.death_animation_count += 1
+            else:
+                self.dead_sprite = self.death_animation.popleft()
+                self.death_animation_count = 0
+        return self.dead_sprite
 
     def detect_collision(self, dx, dy):
         collision_list = self.game.world.collision_objects
@@ -574,7 +589,8 @@ class Slender(SpriteObject):
             self.pos = (self.x, self.y)
 
     def update(self, player):
-        self.action(player)
+        if not self.is_dead:
+            self.action(player)
 
 
 def bfs(px, py, sx, sy, conj_dict):

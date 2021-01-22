@@ -115,10 +115,10 @@ class Level_maker(QMainWindow):
             0, 0, 9, 1)
         wall, ok_pressed2 = QInputDialog.getInt(
             self, "Введите кодировку клетки стены", "Кодировка стены",
-            5, 0, 9, 1)
+            2, 0, 9, 1)
         another, ok_pressed3 = QInputDialog.getInt(
             self, "Введите кодировку дополнительной текстуры", "Кодировка дополнительной текстуры",
-            6, 0, 9, 1)
+            1, 0, 9, 1)
         if not ok_pressed1:
             free = '0'
         if not ok_pressed2:
