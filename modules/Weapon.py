@@ -1,4 +1,3 @@
-import pygame
 from modules.Settings import *
 from modules.Drawer import ray_casting_npc_player
 import os
