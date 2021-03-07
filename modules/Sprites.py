@@ -444,7 +444,7 @@ class Slender(SpriteObject):
                                  self.sprite_angles}
         self.active_time = 0
         self.sleep = 5 * FPS
-        self.health = 19
+        self.health = 1
 
     def dead_animation(self):
         self.animation_speed = FPS // 2

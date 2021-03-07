@@ -1,6 +1,7 @@
 from modules.Settings import *
 from modules.Sprites import noteicons_group
 from modules.Button import Button
+import pygame
 
 
 class GamePauseInterface:
@@ -35,32 +36,31 @@ class WinInterface:
     def __init__(self, game):
         self.game = game
 
-        self.restart_button = Button('RESTART', ON_MENU_BUTTON_RESTART, self.game)
+        self.start_button = Button("RESTART", ON_MENU_BUTTON_RESTART, self.game)
         self.exit_button = Button("EXIT", ON_MENU_BUTTON_EXIT, self.game)
 
         self.initUi()
 
     def initUi(self):
-        self.restart_button.size = (560, 80)
-        self.restart_button.move_bc(HALF_WIDTH, HALF_HEIGHT)
-        self.restart_button.color = RED
-        self.restart_button.background_color = DARKGRAY
-        self.exit_button.move_bc(HALF_WIDTH, HALF_HEIGHT + 150)
+        self.start_button.width += 150
+        self.start_button.move_bc(10 + (self.start_button.width // 2), HALF_HEIGHT)
+        self.start_button.color = MENU_BUTTON_START_COLOR
+        self.exit_button.move_bc(10 + (self.exit_button.width // 2), HALF_HEIGHT + 150)
         self.exit_button.color = MENU_BUTTON_EXIT_COLOR
 
     def render(self):
         # Задний фон
-        self.game.screen.blit(self.game.menu_picture, (0, 0),
+        self.game.screen.blit(self.game.win_picture, (0, 0),
                               (0, 0, WIDTH, HEIGHT))
 
         # Кнопки
-        self.restart_button.draw()
+        self.start_button.draw()
         self.exit_button.draw()
 
         # Лого
-        label = self.game.font.render('Evill Stuff', 1, MENU_TITLE_COLOR)
+        label = self.game.font.render('YOU WIN', 1, MENU_TITLE_COLOR)
         self.game.screen.blit(label, (
-            WIDTH // 2 - label.get_width() // 2, HEIGHT // 2 - 200))
+            10, HEIGHT // 2 - 200))
 
 
 class MenuInterface:

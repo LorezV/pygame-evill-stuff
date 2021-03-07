@@ -4,6 +4,7 @@ from modules.Drawer import Drawer, ray_casting_walls
 from modules.Interface import *
 from modules.World import World
 from random import sample
+import pygame
 
 
 class Game:
@@ -21,6 +22,9 @@ class Game:
         self.player = Player(self)
         self.menu_picture = pygame.image.load('data/textures/menu.png')
         self.menu_picture = pygame.transform.scale(self.menu_picture,
+                                                   (WIDTH, HEIGHT))
+        self.win_picture = pygame.image.load('data/textures/win.png')
+        self.win_picture = pygame.transform.scale(self.win_picture,
                                                    (WIDTH, HEIGHT))
 
         self.portal_open = False
@@ -41,6 +45,7 @@ class Game:
         self.labirint_level = Labirint(self)
         self.planet_level = PlanetLevel(self)
         self.final_level = FinalLevel(self)
+        self.win_level = Win(self)
 
         # Run first level
         self.current_level = None
@@ -170,13 +175,13 @@ class Win(Level):
         pygame.mouse.set_visible(True)
         pygame.mixer.quit()
         pygame.mixer.init()
-        pygame.mixer.music.set_volume(1)
-        pygame.mixer.music.load('data/music/limit_lvl2.mp3')
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.load('data/music/rickroll.mp3')
         pygame.mixer.music.play(-1)
+        pygame.mouse.set_pos((10, 10))
 
     def update(self):
         super().update()
-        self.game.screen.fill(BLACK)
         self.game.win_interface.render()
 
 
@@ -198,7 +203,7 @@ class FinalLevel(Level):
         self.game.sprites.objects_list = [Slender(self.game.sprites.sprite_parametrs['sprite_slender'], (29.5, 20.5),
                                                   self.game)]
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 100):
+        for i in sample(spawn_coords, 20):
             self.game.sprites.objects_list.append(
                 Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
 
@@ -214,7 +219,12 @@ class FinalLevel(Level):
         self.game.drawer.background(self.game.player.ang, sky_texture="sky_2")
         walls, wall_shot = ray_casting_walls(self.game.player, self.game.drawer.textures, self.game.world)
         self.game.drawer.world(walls + [obj.object_locate(self.game.player) for obj in self.game.sprites.objects_list])
-        self.game.drawer.mini_map(self.game.player, self.game.sprites, True)
+        check = self.game.drawer.mini_map(self.game.player, self.game.sprites, True)
+        # Win
+        if not check:
+            pygame.event.clear()
+            self.game.set_level(self.game.win_level)
+            return
         # self.game.drawer.fps(self.game.clock)
         self.game.planet_interface.render()
         self.game.player_interface.render()
@@ -239,7 +249,7 @@ class PlanetLevel(Level):
         pygame.mixer.music.play(-1)
         self.game.sprites.objects_list.clear()
         spawn_coords = list(self.game.world.conj_dict.keys())
-        for i in sample(spawn_coords, 50):
+        for i in sample(spawn_coords, 30):
             self.game.sprites.objects_list.append(
                 Skeleton(self.game.sprites.sprite_parametrs['sprite_skeleton'], (i[0] + 0.5, i[1] + 0.5), self.game))
 
