@@ -102,7 +102,7 @@ class Level:
             if event.type == pygame.QUIT or event.type == ON_MENU_BUTTON_EXIT.type:
                 self.game.terminate()
             elif event.type == ON_MENU_BUTTON_START.type:
-                self.game.set_level(self.game.planet_level)
+                self.game.set_level(self.game.labirint_level)
             elif event.type == ON_MENU_BUTTON_RESTART.type:
                 self.game.restart()
 
