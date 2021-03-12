@@ -5,7 +5,7 @@ from modules.Game import Game
 
 def main():
     pygame.init()
-    pygame.display.set_caption("Evill Stuff | PyGame")
+    pygame.display.set_caption("Evil Stuff | PyGame")
     game = Game()
     while game.running:
         game.game_loop()
