@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QInputDialog
 from PyQt5.QtGui import QColor
 import sys
 
-
+# Дополнительный редактор карт для разработчиков.
 class Level_maker(QMainWindow):
     def __init__(self):
         super().__init__()

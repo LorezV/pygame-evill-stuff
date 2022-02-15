@@ -4,6 +4,7 @@ import os
 
 
 class Weapon():
+    """Класс оружия, реализующий функционал и анимацю стрельбы."""
     def __init__(self, game):
         self.game = game
 
@@ -41,6 +42,7 @@ class Weapon():
         self.is_sfx_render = False
 
     def render(self, shots):
+        """Отрисовка оружия и его анимации."""
         sprite = self.texture
         if self.is_shooting and not self.game.pause:
             sprite = self.shot_animation[self.shot_animation_pos]
@@ -67,12 +69,14 @@ class Weapon():
         self.game.screen.blit(sprite, (0, 0))
 
     def render_sfx(self):
+        """Отрисовка особых эффектов."""
         sfx = pygame.transform.scale(self.sfx[self.sfx_animation_pos], (self.shot_projection, self.shot_projection))
         sfx_rect = sfx.get_rect()
         self.game.screen.blit(sfx, (HALF_WIDTH - sfx_rect.w // 2, HALF_HEIGHT - sfx_rect.h // 2))
         self.sfx_animation_pos += 1
 
     def shoot_request(self):
+        """Обработка запроса на выстрел."""
         if self.is_shooting or self.is_reloading or self.ammo <= 0 or self.game.pause or self.action_time > 0:
             return False
         if self.is_shooting:
@@ -80,6 +84,7 @@ class Weapon():
         self.shoot()
 
     def shoot(self):
+        """Функционал стрельбы."""
         self.action_time = 30
         self.is_shooting = True
         self.ammo -= 1
@@ -99,11 +104,13 @@ class Weapon():
                 break
 
     def reload_request(self):
+        """Обработка запроса на перезарядку."""
         if self.is_shooting or self.is_reloading or self.ammo == self.max_ammo or self.game.pause or self.action_time > 0:
             return False
         self.reload()
 
     def reload(self):
+        """Функционал перезарядки."""
         self.action_time = 1 * 60
         self.reload_sound.play(0)
         self.is_reloading = True

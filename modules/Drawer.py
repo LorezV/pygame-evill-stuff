@@ -3,6 +3,7 @@ from numba import njit
 
 
 class Drawer:
+    """Предоставляет функционал для отрисовки: мини-карта, окружение, счетчик кадров, интерфейс состояния игрока."""
     def __init__(self, game):
         self.game = game
         sky_image = pygame.image.load('data/textures/sky.png').convert()
@@ -27,31 +28,31 @@ class Drawer:
         }
 
     def fps(self, clock):
+        """Отрисовывает на игровом экране счетчик кадров."""
         display_fps = str(int(clock.get_fps()))
         render = self.game.font_mini.render(display_fps, 0, GREEN)
         self.game.screen.blit(render, FPS_POS)
 
     def mini_map(self, player, sprites, flag=False):
+        """Отрисовывает на игровом экране миникарту."""
         check = False
         self.game.screen_minimap.fill("black")
         map_x, map_y = player.x // MAP_SCALE, player.y // MAP_SCALE
-        # map_x_col, map_y_col = player.rect.x // MAP_SCALE,
-        # player.rect.y // MAP_SCALE
         pygame.draw.line(self.game.screen_minimap, YELLOW, (map_x, map_y),
                          (map_x + 12 * math.cos(player.angle),
                           map_y + 12 * math.sin(player.angle)), 2)
-
-        # Draw collision rect
-        # pygame.draw.rect(self.screen_minimap, "green", (
-        #     player.rect.x // MAP_SCALE, player.rect.y // MAP_SCALE,
-        #     player.rect.width // MAP_SCALE,
-        #     player.rect.height // MAP_SCALE))
 
         pygame.draw.circle(self.game.screen_minimap, RED,
                            (int(map_x), int(map_y)), 5)
         for x, y in self.game.world.mini_map:
             pygame.draw.rect(self.game.screen_minimap, GREEN,
                              (x, y, MAP_TILE, MAP_TILE))
+        
+        for a in sprites.objects_list:
+            if a.flag == 'aid':
+                x, y = a.pos
+                pygame.draw.rect(self.game.screen_minimap, RED, (x // MAP_SCALE, y // MAP_SCALE, a.side // MAP_SCALE, a.side // MAP_SCALE))
+
         if flag:
             for a in sprites.objects_list:
                 if a.flag != 'npc' or a.is_dead:
@@ -65,6 +66,7 @@ class Drawer:
         return check
 
     def background(self, angle, sky_texture="sky"):
+        """Отрисовывает на игровом экране небо и землю."""
         top_offset = -5 * math.degrees(angle) % WIDTH
         self.game.screen.blit(self.textures[sky_texture], (top_offset, 0))
         self.game.screen.blit(self.textures[sky_texture], (top_offset - WIDTH, 0))
@@ -74,7 +76,7 @@ class Drawer:
                          (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
     def interface(self, player):
-        # Player health
+        """Отрисовывает на игровом экране полоски здоровья и стамины."""
         pygame.draw.rect(self.game.screen, BLACK,
                          (MARGIN, MARGIN, HEALTH_WIDTH, HEALTH_HEIGHT))
         pygame.draw.rect(self.game.screen, RED, (
@@ -86,7 +88,6 @@ class Drawer:
                               (HEALTH_TEXT_POS_X - health_text.get_width() // 2,
                                HEALTH_TEXT_POS_Y - health_text.get_height() // 2))
 
-        # Player stamina
         pygame.draw.rect(self.game.screen, BLACK, (
             STAMINA_POS_X, STAMINA_POS_Y, STAMINA_WIDTH, STAMINA_HEIGHT))
         pygame.draw.rect(self.game.screen, BLUE, (
@@ -107,13 +108,15 @@ class Drawer:
 
 @njit(fastmath=True)
 def mapping(a, b):
+    """Быстрый рассчёт необходимых для работы ray-casting величин. Проекция размеров 2D карты в размеры 3D."""
     return (a // TILE) * TILE, (b // TILE) * TILE
 
 
 @njit(fastmath=True)
 def ray_casting(player_pos, player_angle, _world_map, WORLD_WIDTH, WORLD_HEIGHT):
+    """Проверка направления взгляда игрока и наличия стен в области видимости."""
     casted_walls = []
-    ox, oy = player_pos
+    ox, oy = player_pos 
     texture_v, texture_h = 1, 1
     xm, ym = mapping(ox, oy)
     cur_angle = player_angle - HALF_FOV
@@ -157,6 +160,7 @@ def ray_casting(player_pos, player_angle, _world_map, WORLD_WIDTH, WORLD_HEIGHT)
 
 
 def ray_casting_walls(player, textures, world):
+    """Масштабирование стен, на которые смотрит игрок, в соответсвтии с расстоянием от них. Обработка физики выстрела (при необходимости)."""
     casted_walls = ray_casting(player.pos, player.ang, world.world_map, world.WORLD_WIDTH, world.WORLD_HEIGHT)
     wall_shot = casted_walls[CENTER_RAY][0], casted_walls[CENTER_RAY][2]
     walls = []
@@ -186,6 +190,7 @@ def ray_casting_walls(player, textures, world):
 
 @njit(fastmath=True, cache=True)
 def ray_casting_npc_player(npc_x, npc_y, _world_map, player_pos):
+    """Проверка непосредсвтенной видимости NPC и игрока."""
     ox, oy = player_pos
     xm, ym = mapping(ox, oy)
     delta_x, delta_y = ox - npc_x, oy - npc_y

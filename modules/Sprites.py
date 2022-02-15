@@ -6,6 +6,8 @@ from random import sample, randint
 
 
 class Sprites:
+    """Базовый класс спрайтов. Содержит словари со свойствами объектов."""
+
     def __init__(self, game):
         self.game = game
         self.sprite_parametrs = {
@@ -22,7 +24,8 @@ class Sprites:
                     f'data/sprites/slender/animation_attack/{i}.png').convert_alpha()
                                    for i in range(11)),
                 'death_animation': deque(
-                    pygame.image.load(f'data/sprites/slender/animation_death/{i}.png').convert_alpha()
+                    pygame.image.load(
+                        f'data/sprites/slender/animation_death/{i}.png').convert_alpha()
                     for i in range(1, 22)),
                 'is_dead': False,
                 'dead_shift': 0.3,
@@ -55,6 +58,28 @@ class Sprites:
                 'flag': 'note',
                 'obj_action': deque()
             },
+            'sprite_aid': {
+                'sprite': [pygame.image.load(
+                    f'data/sprites/aid/first_aid_kit.png').convert_alpha(),
+                           pygame.image.load(
+                               f"data/sprites/aid/angled_0.png").convert_alpha(),
+                           pygame.image.load(
+                               f"data/sprites/aid/angled_1.png").convert_alpha()],
+                'viewing_angles': True,
+                'shift': 0,
+                'scale': (0.2, 0.2),
+                'side': 25,
+                'animation': deque(),
+                'death_animation': [],
+                'is_dead': None,
+                'dead_shift': None,
+                'animation_dist': 50,
+                'animation_speed': 8,
+                'blocked': True,
+                'is_trigger': True,
+                'flag': 'aid',
+                'obj_action': deque()
+            },
             'sprite_skeleton': {'sprite': [pygame.image.load(
                 f'data/sprites/skeleton/idle/1.png').convert_alpha() for i
                                            in
@@ -67,7 +92,8 @@ class Sprites:
                                     f'data/sprites/skeleton/animation_attack/{i}.png').convert_alpha()
                                                    for i in range(1, 4)),
                                 'death_animation': deque(
-                                    pygame.image.load(f'data/sprites/skeleton/snimation_death/{i}.png').convert_alpha()
+                                    pygame.image.load(
+                                        f'data/sprites/skeleton/snimation_death/{i}.png').convert_alpha()
                                     for i in range(1, 4)),
                                 'is_dead': False,
                                 'dead_shift': 0.8,
@@ -82,21 +108,21 @@ class Sprites:
 
                                 }
         }
-        self.note_coords = sample(self.game.world.notes_spawn, 8)
         self.objects_list = []
 
     @property
     def sprite_shot(self):
+        """Проверка на соприкосновение выстрела и спрайта."""
         return min([obj.is_on_fire for obj in self.objects_list])
 
     def destroy_all(self):
+        """Удаление всех спрайтов"""
         self.objects_list.clear()
 
 
-#  def destoy_one(self, ind):
-#     del self.objects_list[ind]
-
 class SpriteObject():
+    """Базовый класс, работающий непосредственно с созданными на уровне спрайтами."""
+
     def __init__(self, parameters, pos):
         self.object = parameters['sprite'].copy()
         self.viewing_angles = parameters['viewing_angles']
@@ -132,23 +158,28 @@ class SpriteObject():
                                      zip(self.sprite_angles, self.object)}
 
     def delta(self, x, y):
+        """Возвращает непосредственное расстояние между спрайтом и коордиантами."""
         return ((x - self.x) ** 2 + (y - self.y) ** 2) ** 0.5
 
     @property
     def is_on_fire(self):
+        """Проверка, попадает ли спрайт под выстрел."""
         if CENTER_RAY - self.side // 2 < self.current_ray < CENTER_RAY + self.side // 2 and self.blocked:
             return self.distance, self.proj_height
         return float("inf"), None
 
     @property
     def sx(self):
+        """Возвращает позицию по оси абсцисс."""
         return self.x
 
     @property
     def sy(self):
+        """Возвращает позицию по оси ординат."""
         return self.y
 
     def object_locate(self, player):
+        """Определяет, необходимо ли отрисовывать данный спрайт на экране (видит ли его игрок)."""
         if not self.hidden:
             dx, dy = self.x - player.x, self.y - player.y
             self.distance = math.sqrt(dx ** 2 + dy ** 2)
@@ -199,6 +230,7 @@ class SpriteObject():
             return False,
 
     def sprite_animation(self, player):
+        """Проигрывание анимации спрайта (при наличии)."""
         if self.animation and self.distance < self.animation_dist:
             sprite_object = self.animation[0]
             if self.animation_count < self.animation_speed:
@@ -211,6 +243,7 @@ class SpriteObject():
         return self.object
 
     def visible_sprite(self):
+        """Разные текстуры с разных сторон спрайта (при наличии)."""
         if self.viewing_angles:
             if self.theta < 0:
                 self.theta += DOUBLE_PI
@@ -222,6 +255,7 @@ class SpriteObject():
         return self.object
 
     def dead_animation(self):
+        """Анимация после уничтожения спрайта (при наличии)."""
         if len(self.death_animation):
             if self.death_animation_count < self.animation_speed:
                 self.dead_sprite = self.death_animation[0]
@@ -232,6 +266,7 @@ class SpriteObject():
         return self.dead_sprite
 
     def npc_in_action(self):
+        """Анимация действия спрайта (при наличии)."""
         sprite_object = self.obj_action[0]
         if self.animation_count < self.animation_speed:
             self.animation_count += 1
@@ -245,6 +280,8 @@ noteicons_group = pygame.sprite.Group()
 
 
 class NoteIcon(pygame.sprite.Sprite):
+    """Класс иконки записки. Реализует отображение найденных и ненайденных записок."""
+
     def __init__(self, image, image_unfound):
         super().__init__()
         self.founded = False
@@ -256,23 +293,30 @@ class NoteIcon(pygame.sprite.Sprite):
         noteicons_group.add(self)
 
     def update(self, *args, **kwargs):
+        """Дейтсвие в каждой итерации."""
         pass
 
     def set_founded(self):
+        """Изменение текстуры ненайденной записки на найденную."""
         self.founded = True
         self.image = self.icon
 
     def move(self, x, y):
+        """Перемещение иконки."""
         self.rect.x, self.rect.y = x, y
 
 
 class Note(SpriteObject):
+    """Класс записки. Отвечает за спрайты записок на первом уровне."""
+
     def __init__(self, parameters, pos, textures, title, note_icon):
         super().__init__(parameters, pos)
         self.object = textures
         self.title = title
 
         self.noteIcon = note_icon
+        self.capture_sound = pygame.mixer.Sound(
+            'data/sprites/note/sounds/note.mp3')
 
         if self.viewing_angles:
             self.sprite_angles = [frozenset(range(325, 361)) | frozenset(
@@ -281,7 +325,29 @@ class Note(SpriteObject):
                                      zip(self.sprite_angles, self.object)}
 
 
+class AidKit(SpriteObject):
+    """Класс аптечки. Восстанавливает здоровье при сборе."""
+
+    def __init__(self, parameters, pos):
+        super().__init__(parameters, pos)
+        self.capture_sound = pygame.mixer.Sound(
+            'data/sprites/aid/sounds/aid.mp3')
+
+        if self.viewing_angles:
+            self.sprite_angles = [frozenset(range(325, 361)) | frozenset(
+                range(1, 45))] + [frozenset(range(185, 325))] + [
+                                     frozenset(range(45, 185))]
+            self.sprite_positions = {angle: pos for angle, pos in
+                                     zip(self.sprite_angles, self.object)}
+
+    def update(self, *args, **kwargs):
+        """Дейтсвие в каждой итерации."""
+        pass
+
+
 class Skeleton(SpriteObject):
+    """Класс скелета. Стандартный противник игрока на 2 и 3 уровнях"""
+
     def __init__(self, parameters, pos, game):
         super().__init__(parameters, pos)
         self.game = game
@@ -295,11 +361,13 @@ class Skeleton(SpriteObject):
                               range(361)]
         self.sprite_positions = {angle: self.object[0] for angle in
                                  self.sprite_angles}
-        self.death_sound = pygame.mixer.Sound('data/sprites/skeleton/sounds/skeleton_death.mp3')
+        self.death_sound = pygame.mixer.Sound(
+            'data/sprites/skeleton/sounds/skeleton_death.mp3')
         self.last_player_pos = (self.x, self.y)
         self.health = 1
 
     def detect_collision(self, dx, dy):
+        """Позволяет спрайту двигаться у стен, испытвая коллизию."""
         collision_list = self.game.world.collision_objects
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
@@ -328,6 +396,7 @@ class Skeleton(SpriteObject):
         self.y += dy
 
     def sprite_animation(self, player):
+        """Анимация спрайта + атака игрока при возможности."""
         if self.animation and self.distance < self.animation_dist and \
                 self.attack_cooldown <= 0:
             sprite_object = self.animation[0]
@@ -336,6 +405,7 @@ class Skeleton(SpriteObject):
         return self.object
 
     def move(self, player, flag=False):
+        """Логика перемещения спрайта."""
         if self.distance > self.animation_dist or (
                 (self.x - player.pos[0]) ** 2 + (
                 self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
@@ -383,6 +453,7 @@ class Skeleton(SpriteObject):
             self.pos = (self.x, self.y)
 
     def attack_player(self, player):
+        """Анимация атаки игрока."""
         if self.animation_count < self.animation_speed:
             self.animation_count += 1
         else:
@@ -397,13 +468,15 @@ class Skeleton(SpriteObject):
             player.set_health(player.health - attack)
 
     def action(self, player):
+        """Анимация движения и логика перемещения спрайта."""
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
         delta = self.delta(player.x, player.y)
         if self.attack_cooldown <= 0:
             if delta < self.animation_dist:
                 self.attack_player(player)
-            if ray_casting_npc_player(self.sx, self.sy, self.game.world.world_map, player.pos) or \
+            if ray_casting_npc_player(self.sx, self.sy,
+                                      self.game.world.world_map, player.pos) or \
                     self.delta(player.x, player.y) < 70:
                 self.npc_action_trigger = True
                 self.last_player_pos = player.x, player.y
@@ -420,11 +493,14 @@ class Skeleton(SpriteObject):
             self.npc_action_trigger = False
 
     def update(self, player):
+        """Действие спрайта каждую итерацию цикла."""
         if not self.is_dead:
             self.action(player)
 
 
 class Slender(SpriteObject):
+    """Класс главного противника игрока."""
+
     def __init__(self, parameters, pos, game):
         super().__init__(parameters, pos)
         self.game = game
@@ -435,7 +511,8 @@ class Slender(SpriteObject):
         self.attack_sound = pygame.mixer.Sound(
             'data/sprites/slender/sounds/attack.mp3')
         self.slender_sound.set_volume(0)
-        self.death_sound = pygame.mixer.Sound('data/sprites/slender/sounds/death_sound.mp3')
+        self.death_sound = pygame.mixer.Sound(
+            'data/sprites/slender/sounds/death_sound.mp3')
         self.attack_cooldown = 200
         self.count = 0
         self.sprite_angles = [frozenset(range(i, i + 1)) for i in
@@ -447,6 +524,7 @@ class Slender(SpriteObject):
         self.health = 19
 
     def dead_animation(self):
+        """Анимация гибели спрайта."""
         self.animation_speed = FPS // 2
         self.slender_sound.stop()
         if len(self.death_animation):
@@ -459,6 +537,7 @@ class Slender(SpriteObject):
         return self.dead_sprite
 
     def detect_collision(self, dx, dy):
+        """Позволяет спрайту двигаться у стен, испытвая коллизию."""
         collision_list = self.game.world.collision_objects
         next_rect = self.rect.copy()
         next_rect.move_ip(dx, dy)
@@ -487,6 +566,7 @@ class Slender(SpriteObject):
         self.y += dy
 
     def sprite_animation(self, player):
+        """Анимация спрайта + атака игрока при возможности."""
         if self.animation and self.distance < self.animation_dist and \
                 self.attack_cooldown <= 0:
             sprite_object = self.animation[0]
@@ -495,6 +575,7 @@ class Slender(SpriteObject):
         return self.object
 
     def move(self, player):
+        """Перемещение спрайта при непосредственной видимости игрока."""
         if self.distance > self.animation_dist or (
                 (self.x - player.pos[0]) ** 2 + (
                 self.y - player.pos[1]) ** 2) ** 0.5 > self.animation_dist:
@@ -507,6 +588,7 @@ class Slender(SpriteObject):
             self.pos = (self.x, self.y)
 
     def attack_player(self, player):
+        """Атака игрока + логика анимация."""
         if self.animation_count < self.animation_speed:
             self.animation_count += 1
         else:
@@ -524,6 +606,7 @@ class Slender(SpriteObject):
             player.set_health(player.health - attack)
 
     def action(self, player):
+        """Проверка возможности атаки + перемещение за игроком вне его видимсоти."""
         self.attack_cooldown -= 1
         self.npc_action_trigger = False
         delta = self.delta(player.x, player.y)
@@ -590,11 +673,13 @@ class Slender(SpriteObject):
             self.pos = (self.x, self.y)
 
     def update(self, player):
+        """Действие спрайта каждую итерацию цикла."""
         if not self.is_dead:
             self.action(player)
 
 
 def bfs(px, py, sx, sy, conj_dict):
+    """Поиск в ширину позволяет спрайтам перемещаться в необходимую точку по оптимальному маршруту."""
     queue = deque([(sx, sy)])
     visited = {queue[0]: None}
     while queue:
